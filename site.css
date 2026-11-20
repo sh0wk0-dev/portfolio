@@ -1,0 +1,43 @@
+/* サイト共通: 上のメニューバーと、黒背景のページの基本スタイル */
+:root { --menu-h: 56px; --menu-max: 1100px; }  /* --menu-max = メニューバーの中身が横に広がる限界(これより広い画面では中央に寄る) */
+html, body { margin: 0; background: #000; color: #fff; }
+body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lora(Google Fonts)。日本語は明朝体で代用 */
+
+/* メニューバー: 黒背景・白文字。上に固定(スクロールしても残る) */
+.menubar {
+  position: sticky; top: 0; z-index: 100;
+  box-sizing: border-box; height: var(--menu-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  --menu-pad: clamp(16px, 3vw, 32px);
+  padding: 0 max(var(--menu-pad), calc((100% - var(--menu-max)) / 2));
+  background: #000; color: #fff;
+}
+.menubar .title { font-size: clamp(12px, 1.8vw, 14px); letter-spacing: .08em; white-space: nowrap; }  /* タイトル(リンクではない) */
+.menubar nav { display: flex; gap: clamp(16px, 3vw, 32px); }
+.menubar nav a { color: #fff; text-decoration: none; font-size: clamp(13px, 2vw, 15px); letter-spacing: .08em; opacity: .85; transition: opacity .2s; }
+.menubar nav a:hover, .menubar nav a:focus-visible, .menubar nav a[aria-current="page"] { opacity: 1; text-decoration: underline; text-underline-offset: 6px; }
+
+.menubar nav .insta { display: inline-flex; align-items: center; }  /* Instagram アイコン(Contact の右隣) */
+.menubar nav .insta svg { display: block; }
+
+/* 中身のページ(Profile / Contact)共通 */
+.page { max-width: 640px; margin: 0 auto; padding: clamp(32px, 8vw, 72px) 20px 96px; }
+.page h1 { font-size: clamp(22px, 4vw, 28px); font-weight: 400; letter-spacing: .12em; margin: 0 0 32px; }
+
+/* フォーム */
+.form label { display: block; margin: 0 0 24px; font-size: 13px; letter-spacing: .1em; }
+.form input, .form textarea {
+  display: block; width: 100%; box-sizing: border-box; margin-top: 8px; padding: 12px 14px;
+  background: #000; color: #fff; border: 1px solid #fff; border-radius: 0;
+  font: inherit; font-size: 16px; letter-spacing: .04em;
+}
+.form textarea { min-height: 180px; resize: vertical; }
+.form input:focus, .form textarea:focus { outline: 2px solid #fff; outline-offset: 2px; }
+.form button {
+  padding: 12px 40px; background: #fff; color: #000; border: 1px solid #fff; border-radius: 0;
+  font: inherit; font-size: 14px; letter-spacing: .14em; cursor: pointer; transition: background .2s, color .2s;
+}
+.form button:hover:not(:disabled), .form button:focus-visible { background: #000; color: #fff; }
+.form button:disabled { opacity: .5; cursor: default; }
+.form .note { margin: 20px 0 0; font-size: 14px; line-height: 1.7; min-height: 1.7em; }
+.hp { position: absolute; left: -9999px; }   /* スパム対策の隠し欄(人は入力しない) */

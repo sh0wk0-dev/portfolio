@@ -1,0 +1,9 @@
+# 公開するファイルだけを載せる(元データの .psd / .rif や、作業用の画像は載せない)
+/*
+!/.gitignore
+!/index.html
+!/profile.html
+!/contact.html
+!/site.css
+!/layer-pivots.json
+!/layers/

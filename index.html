@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Showko Yamanaka Illustration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  html, body { margin: 0; background: #000; }
+
+  /* ステージ: 基準サイズ 1088 x --h(下の値) の「設計座標」を、画面幅いっぱいに拡大縮小して表示する。
+     --x --y --w はすべてこの設計座標(px)での指定 */
+  #stage {
+    position: relative;
+    width: 100%;
+    --h: 6800;                       /* ページ全体の高さ(設計座標)。大きくすると下にスクロールできる範囲が増える */
+    aspect-ratio: calc(1088 / var(--h));
+    overflow: hidden;
+    background: #000;
+  }
+  #stage { container-type: inline-size; }  /* 文字の大きさを、ステージの幅に合わせて拡大縮小するため */
+  /* 最下部の水の上の「To be continued」。--y = 縦位置(設計座標)、--fs = 文字の大きさ(設計座標のpx) */
+  #stage .ending {
+    position: absolute; left: 0; width: 100%; text-align: center;
+    top: calc(var(--y) / var(--h) * 100%);
+    font-size: calc(var(--fs) / 1088 * 100cqw);
+    letter-spacing: .3em; padding-left: .3em; /* padding-left は letter-spacing による右寄りを打ち消す */
+    color: #fff; text-shadow: 0 0 .5em rgba(0, 70, 80, .55);
+    pointer-events: none; user-select: none; margin: 0;
+  }
+  #stage .layer {
+    position: absolute;
+    left: calc(var(--x) / 1088 * 100%);
+    top:  calc(var(--y) / var(--h) * 100%);
+    width: calc(var(--w) / 1088 * 100%);
+    height: auto;
+    max-width: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+  /* 鳥の目: 初めは隠れていて、条件を満たすとふわっと開く */
+  #stage .eye { opacity: 0; transition: opacity .25s ease; }
+  #stage .eye.open { opacity: 1; }
+  /* 滝のしぶき: taki1 と taki2 を交互にパッと切り替える(滑らかに混ぜない) */
+  #stage .foam1 { animation: foam1 0.7s steps(1, end) infinite; }  /* 0.7s = taki1 と taki2 が 1 往復する時間(各 0.35 秒表示) */
+  #stage .foam2 { animation: foam2 0.7s steps(1, end) infinite; }  /* foam1 と同じ秒数にすること */
+  @keyframes foam1 { 0% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes foam2 { 0% { opacity: 0; } 50% { opacity: 1; } }
+  /* 滝つぼの波紋: takitsubo1 → 2 → 3 → 2 を 1.2s で 1 周(各 0.3 秒)。1 つだけ表示される */
+  #stage .tsubo { opacity: 0; }
+  #stage .tsubo1 { animation: tsubo1 1.2s steps(1, end) infinite; }
+  #stage .tsubo2 { animation: tsubo2 1.2s steps(1, end) infinite; }
+  #stage .tsubo3 { animation: tsubo3 1.2s steps(1, end) infinite; }
+  @keyframes tsubo1 { 0% { opacity: 1; } 25% { opacity: 0; } }
+  @keyframes tsubo2 { 0% { opacity: 0; } 25% { opacity: 1; } 50% { opacity: 0; } 75% { opacity: 1; } }
+  @keyframes tsubo3 { 0% { opacity: 0; } 50% { opacity: 1; } 75% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    #stage .foam1, #stage .foam2, #stage .tsubo { animation: none; }
+    #stage .foam2, #stage .tsubo2, #stage .tsubo3 { opacity: 0; } #stage .tsubo1 { opacity: 1; }
+  }
+  /* kirakira: 全体がいっせいに、小さくぶるぶる震える(点滅はしない)。0.6s = 震えの 1 周の長さ(小さいほど速い)。
+     translate の % は画像の幅(設計座標 1088px)に対する割合で、0.054% ≒ 0.6px。数字を大きくすると震えが大きくなる */
+  #stage .kira-all { animation: kiraShake 0.6s steps(1, end) infinite, kiraShrink 1s ease-in-out infinite alternate; }  /* 震え + ほんの少し縮んで戻る(1s = 縮む→戻る の半周) */
+  @keyframes kiraShake { 0% { translate: 0.043% -0.029%; } 14% { translate: -0.054% 0.036%; } 28% { translate: 0.029% 0.05%; } 42% { translate: -0.04% -0.043%; } 57% { translate: 0.058% 0.018%; } 71% { translate: -0.025% -0.054%; } 85% { translate: 0.036% 0.043%; } }
+  @keyframes kiraShrink { from { scale: 1; } to { scale: 0.997; } }  /* 0.997 = 幅 1088px のとき約 3px 縮む。小さくするほど縮み方が大きい */
+  @media (prefers-reduced-motion: reduce) { #stage .kira-all { animation: none; } }
+  /* kirakira-top(滝より上): 全体がいっせいに、滑らかに消えて現れる。2s = 暗くなるまでの長さ(小さいほど速い)。.5 = 一番暗いときの明るさ */
+  #stage .kira-top { animation: kiraFade 2s ease-in-out infinite alternate; }
+  @keyframes kiraFade { from { opacity: 1; } to { opacity: .5; } }
+  @media (prefers-reduced-motion: reduce) { #stage .kira-top { animation: none; } }
+  /* 金色の枝: 揺れは下の JS(BRANCH_SWAY)で動かす。支点(枝の付け根)は各 <img> の transform-origin */
+  #stage .branch { will-change: transform; }
+  /* 葉 1 枚ぶんのスプライト(JS が生成) */
+  #stage .leaf { position: absolute; will-change: transform; pointer-events: none; }
+  #stage .dot  { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+                 background: #f33; border: 1px solid #000; pointer-events: none; z-index: 5; }
+  #stage .dot.manual { background: #0f0; }
+  #stage .dot.still  { background: #888; }
+  #stage .sel  { position: absolute; border: 2px solid #ff0; pointer-events: none; z-index: 6; box-sizing: border-box; }
+  #stage .hit  { position: absolute; inset: 0; z-index: 7; cursor: crosshair; }
+</style>
+</head>
+<body>
+<header class="menubar">
+  <div class="title">Showko Yamanaka Illustration</div>
+  <nav>
+    <a href="profile.html">Profile</a>
+    <a href="contact.html">Contact</a>
+    <a class="insta" href="https://www.instagram.com/showkoyamanaka/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+    </a>
+  </nav>
+</header>
+<div id="stage">
+  <!-- 奥から手前の順。位置(--x, --y)とサイズ(--w)は設計座標。data-sway の付いた葉は 1 枚ずつ揺れる -->
+  <img class="layer" src="layers/acorns.webp"        style="--x:0; --y:1217; --w:1088" alt=""> <!-- どんぐり -->
+  <img class="layer" src="layers/sky.webp"           style="--x:0; --y:0;    --w:1088" alt=""> <!-- 月と星(元画像1418pxを1088pxに縮小) -->
+  <canvas class="layer" id="twinkle" width="1600" height="2256" style="--x:0; --y:0; --w:1088"></canvas> <!-- 星の小さな粒(sky-dots.webp を粒ごとに明滅させる) -->
+  <img class="layer" src="layers/sora.webp" style="--x:0; --y:2396.3; --w:1088" alt=""> <!-- 日の出の空と月のもや(lake 座標 y=0 が --y:2396.3。以降の「湖の部品」はすべて 1600x6476 の同じ座標系から行を切り出したもの) -->
+  <img class="layer" src="layers/mizu.webp" style="--x:0; --y:3708.7; --w:1088" alt=""> <!-- 水面 -->
+  <canvas class="layer" id="shadow" width="1600" height="1340" style="--x:0; --y:3729.1; --w:1088"></canvas> <!-- 山の下の影(mizu.webp の y=1960〜3300 を、横の帯ごとに少しずらして描き直す。山 yama はこの上に重なる) -->
+  <img class="layer tsubo tsubo1" src="layers/takitsubo1.webp" style="--x:0; --y:5415.5; --w:1088" alt=""> <!-- 滝つぼの波紋 1→2→3→2 と繰り返す。岩(苔)の後ろに置く -->
+  <img class="layer tsubo tsubo2" src="layers/takitsubo2.webp" style="--x:0; --y:5415.5; --w:1088" alt="">
+  <img class="layer tsubo tsubo3" src="layers/takitsubo3.webp" style="--x:0; --y:5415.5; --w:1088" alt="">
+  <img class="layer" src="layers/yama.webp" style="--x:0; --y:3402.7; --w:1088" alt=""> <!-- 山々 -->
+  <canvas class="layer kira" id="kirakira3" data-src="layers/kirakira3.webp" width="1600" height="1110" style="--x:0; --y:3946.7; --w:1088"></canvas> <!-- 水面の光の筋。粒ごとにゆっくりランダムに点滅する -->
+  <img class="layer kira-top" src="layers/kirakira-top.webp" style="--x:0; --y:4463.5; --w:1088" alt=""> <!-- きらきら(滝より上の光の筋)。全体がいっせいにフェードイン・フェードアウトで点滅する -->
+  <img class="layer kira-all" src="layers/kirakira-fall.webp" style="--x:0; --y:4776.3; --w:1088" alt=""> <!-- きらきら(滝の上端の点線から滝のまわりまで)。全体がいっせいに小さく震えて、ほんの少し縮んでは戻る -->
+  <canvas class="layer kira" id="kirakira2" data-src="layers/kirakira2.webp" width="1600" height="2390" style="--x:0; --y:3225.9; --w:1088"></canvas> <!-- きらきら(山・湖の小さな粒)。薄めに、細かく点滅 -->
+  <canvas class="layer" id="fall" width="760" height="1100" style="--x:380.8; --y:4708.3; --w:516.8"></canvas> <!-- 滝の水の流れ(苔の岩 koke の後ろに置く)(lake 座標の (560,3400) から 760x1100px の範囲に重ねる) -->
+  <img class="layer" src="layers/koke.webp" style="--x:0; --y:4558.7; --w:1088" alt=""> <!-- 苔の岩 -->
+  <img class="layer" src="layers/tree.webp"          style="--x:0; --y:1217; --w:1088" alt="" data-role="tree"> <!-- 木 -->
+  <img class="layer" src="layers/leaves.webp"        style="--x:0; --y:1217; --w:1088" alt="" data-sway> <!-- 葉(密) -->
+  <img class="layer" src="layers/bird.webp"          style="--x:0; --y:1217; --w:1088" alt=""> <!-- 鳥 -->
+  <img class="layer eye" id="bird-eye" src="layers/bird-eye.webp" style="--x:610; --y:2343; --w:42" alt=""> <!-- 鳥の開いた目(スクロールで現れる)。元の画像の (610,1126) から 42x38px を切り出したもの -->
+  <img class="layer" src="layers/leaves-sparse.webp" style="--x:0; --y:1217; --w:1088" alt="" data-sway> <!-- 葉(まばら) -->
+  <img class="layer foam1" src="layers/taki1.webp" style="--x:0; --y:4912.3; --w:1088" alt=""> <!-- 滝のしぶき(taki1 と taki2 が交互に切り替わる) -->
+  <img class="layer foam2" src="layers/taki2.webp" style="--x:0; --y:4912.3; --w:1088" alt="">
+  <img class="layer branch" src="layers/ki2-left.webp" style="--x:-54.4; --y:4245.9; --w:598.4; transform-origin:9.09% 39.0%" alt=""> <!-- 金色の枝(ki2=上の枝、ki1=下の枝。左右に分けて、枝ごとにゆっくり揺れる。画像はページの端の外へ 80px 延長してある) -->
+  <img class="layer branch" src="layers/ki2-right.webp" style="--x:544; --y:4245.9; --w:598.4; transform-origin:90.91% 57.5%" alt="">
+  <img class="layer branch" src="layers/ki1-left.webp" style="--x:-54.4; --y:4517.9; --w:598.4; transform-origin:9.09% 46.9%" alt="">
+  <img class="layer branch" src="layers/ki1-right.webp" style="--x:544; --y:4517.9; --w:598.4; transform-origin:90.91% 69.9%" alt="">
+  <p class="ending" style="--y:6500; --fs:30">To be continued</p> <!-- 最下部の水の中央の文字 -->
+</div>
+
+<script>
+// ===== 調整用パラメータ =====
+const MIN_ANGLE    = 5;      // 揺れる角度の下限(度)
+const MAX_ANGLE    = 8;      // 揺れる角度の上限(度)
+const SWAY_SPEED   = 2;      // 揺れの速さ(大きいほど速い)
+const SCROLL_BOOST = 0.45;   // スクロールで揺れ始める葉の割合(0〜1)
+const SCROLL_GAIN  = 0.02;   // スクロール速度 -> 揺れやすさ
+const DECAY        = 0.94;   // 収まる速さ(1 に近いほど長く揺れる)
+const MAX_GAP      = 60;     // 枝からこれ以上離れた葉は揺らさない(木の画像のpx)
+const MAX_AREA     = 12000;  // これより大きい塊(葉が重なって繋がったもの)は揺らさない(設計座標px²)
+const MIN_AREA     = 150;    // これより小さい塊は揺らさない(設計座標px²)
+const EYE_LINE     = 0.5;    // 鳥の目が、画面の上から この割合の位置より上に来たら目を開ける(2/3 = 画面の上から3分の2)
+const DEBUG        = location.search.includes('debug'); // ?debug で支点を赤い点で表示
+const EDIT         = location.search.includes('edit');  // ?edit で支点の編集モード
+const PIVOT_FILE   = 'layer-pivots.json';
+const STORE_KEY    = 'layerPivots';
+
+// 手で指定した支点: [{ layer:'leaves.webp', leaf:[x,y], pivot:[x,y] }]
+//   揺らさない葉:   [{ layer:'leaves.webp', leaf:[x,y], still:true }]
+// 座標はすべて設計座標(幅1088、高さは --h)。leaf = その葉の上の任意の点 / pivot = 支点
+let overrides = [];
+
+const STAGE_W = 1088, STAGE_H = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--h"));
+const stage = document.getElementById('stage');
+const leaves = [];   // 揺らす葉 { el, h1, h2, h3, h4 }
+
+function readPixels(img){
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(img, 0, 0);
+  return { c, g, w: c.width, h: c.height, id: g.getImageData(0, 0, c.width, c.height) };
+}
+
+// 木の「枝までの距離」マップ(チャンファー距離変換)。単位は木の画像の px(3倍値)
+function distanceMap(px){
+  const { w, h } = px, a = px.id.data, INF = 60000, d = new Uint16Array(w * h);
+  for (let i = 0; i < w * h; i++) d[i] = a[i * 4 + 3] > 40 ? 0 : INF;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; let v = d[i];
+    if (x > 0) v = Math.min(v, d[i - 1] + 3);
+    if (y > 0) { v = Math.min(v, d[i - w] + 3);
+      if (x > 0) v = Math.min(v, d[i - w - 1] + 4);
+      if (x < w - 1) v = Math.min(v, d[i - w + 1] + 4); }
+    d[i] = v;
+  }
+  for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+    const i = y * w + x; let v = d[i];
+    if (x < w - 1) v = Math.min(v, d[i + 1] + 3);
+    if (y < h - 1) { v = Math.min(v, d[i + w] + 3);
+      if (x < w - 1) v = Math.min(v, d[i + w + 1] + 4);
+      if (x > 0) v = Math.min(v, d[i + w - 1] + 4); }
+    d[i] = v;
+  }
+  return { d, w, h };
+}
+
+// 葉の画像を 1 枚ずつに切り分け、付け根(=枝にいちばん近い部分)を支点にしたスプライトにする
+function buildSway(img, dist){
+  const px = readPixels(img), { w: W, h: H } = px, data = px.id.data;
+  const s = STAGE_W / W;                          // 画像px -> 設計座標
+  const yOff = parseFloat(img.style.getPropertyValue('--y'));
+  const tx = dist.w / W, ty = dist.h / H;         // 画像px -> 木のpx
+  const dAt = (x, y) => dist.d[Math.min(dist.h - 1, (y * ty) | 0) * dist.w + Math.min(dist.w - 1, (x * tx) | 0)] / 3;
+
+  // 1) 連結成分ラベリング(不透明度の高い部分を核にする)
+  const label = new Int32Array(W * H), stack = new Int32Array(W * H);
+  let n = 0;
+  for (let i = 0; i < W * H; i++) {
+    if (data[i * 4 + 3] < 64 || label[i]) continue;
+    n++; let sp = 0; stack[sp++] = i; label[i] = n;
+    while (sp) {
+      const p = stack[--sp], x = p % W;
+      if (x > 0     && !label[p-1] && data[(p-1)*4+3] >= 64) { label[p-1] = n; stack[sp++] = p-1; }
+      if (x < W-1   && !label[p+1] && data[(p+1)*4+3] >= 64) { label[p+1] = n; stack[sp++] = p+1; }
+      if (p >= W    && !label[p-W] && data[(p-W)*4+3] >= 64) { label[p-W] = n; stack[sp++] = p-W; }
+      if (p < W*H-W && !label[p+W] && data[(p+W)*4+3] >= 64) { label[p+W] = n; stack[sp++] = p+W; }
+    }
+  }
+  // 2) 縁の薄い画素(にじみ)を、隣の葉に割り当てる
+  for (let pass = 0; pass < 3; pass++) {
+    const prev = label.slice();
+    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+      const i = y * W + x;
+      if (prev[i] || data[i * 4 + 3] === 0) continue;
+      const v = prev[i-1] || prev[i+1] || prev[i-W] || prev[i+W];
+      if (v) label[i] = v;
+    }
+  }
+  // 3) 各塊の面積・範囲・枝までの最短距離
+  const area = new Int32Array(n + 1), dmin = new Float32Array(n + 1).fill(1e9);
+  const x0 = new Int32Array(n + 1).fill(W), y0 = new Int32Array(n + 1).fill(H), x1 = new Int32Array(n + 1), y1 = new Int32Array(n + 1);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, l = label[i]; if (!l) continue;
+    if (x < x0[l]) x0[l] = x; if (x > x1[l]) x1[l] = x; if (y < y0[l]) y0[l] = y; if (y > y1[l]) y1[l] = y;
+    if (data[i * 4 + 3] < 64) continue;
+    area[l]++;
+    const d = dAt(x, y);
+    if (d < dmin[l]) dmin[l] = d;
+  }
+  // 4) 動かす葉を決め、支点 = 枝に近い画素の平均位置
+  const move = new Uint8Array(n + 1), psx = new Float64Array(n + 1), psy = new Float64Array(n + 1), pn = new Int32Array(n + 1);
+  let cnt = 0, tooBig = 0, tooFar = 0;
+  for (let l = 1; l <= n; l++) {
+    const a = area[l] * s * s;
+    if (a > MAX_AREA) tooBig++; else if (dmin[l] > MAX_GAP) tooFar++;
+    if (a >= MIN_AREA && a <= MAX_AREA && dmin[l] <= MAX_GAP) { move[l] = 1; cnt++; }
+  }
+  // 手で指定された支点を、該当する葉に紐づける(指定があれば対象外の葉も動かす)
+  const layerName = img.src.split('/').pop();
+  const ovPivot = new Array(n + 1).fill(null), still = new Uint8Array(n + 1);
+  for (const o of overrides) {
+    if (o.layer !== layerName) continue;
+    const lx = Math.round(o.leaf[0] / s), ly = Math.round((o.leaf[1] - yOff) / s);
+    if (lx < 0 || ly < 0 || lx >= W || ly >= H) continue;
+    const l = label[ly * W + lx];
+    if (!l) continue;
+    if (o.still) {
+      // 揺らさない葉: 通常表示では動かさない画像のまま。編集モードでは選べるよう葉として作る
+      still[l] = 1;
+      if (EDIT && !move[l]) { move[l] = 1; cnt++; }
+      if (!EDIT && move[l]) { move[l] = 0; cnt--; }
+      continue;
+    }
+    ovPivot[l] = [o.pivot[0] / s, (o.pivot[1] - yOff) / s];
+    if (!move[l]) { move[l] = 1; cnt++; }
+  }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, l = label[i];
+    if (!l || !move[l] || data[i * 4 + 3] < 64) continue;
+    if (dAt(x, y) <= dmin[l] + 2) { psx[l] += x; psy[l] += y; pn[l]++; }
+  }
+  // 5) スプライトを作り、元の画像からはその葉の画素を消す
+  const sp = new Array(n + 1);
+  for (let l = 1; l <= n; l++) if (move[l]) {
+    const bw = x1[l] - x0[l] + 1, bh = y1[l] - y0[l] + 1;
+    sp[l] = { buf: new Uint8ClampedArray(bw * bh * 4), bw, bh };
+  }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, l = label[i];
+    if (!l || !move[l]) continue;
+    const S = sp[l], j = ((y - y0[l]) * S.bw + (x - x0[l])) * 4;
+    S.buf[j] = data[i*4]; S.buf[j+1] = data[i*4+1]; S.buf[j+2] = data[i*4+2]; S.buf[j+3] = data[i*4+3];
+    data[i*4+3] = 0;
+  }
+  px.g.putImageData(px.id, 0, 0);
+
+  // 残り(動かさない部分)は元の画像の代わりに canvas として表示
+  px.c.className = 'layer';
+  px.c.setAttribute('style', img.getAttribute('style'));
+  img.replaceWith(px.c);
+  let anchor = px.c;
+
+  for (let l = 1; l <= n; l++) {
+    if (!move[l]) continue;
+    const S = sp[l], c = document.createElement('canvas');
+    c.width = S.bw; c.height = S.bh;
+    c.getContext('2d').putImageData(new ImageData(S.buf, S.bw, S.bh), 0, 0);
+    c.className = 'leaf';
+    const ppx = ovPivot[l] ? ovPivot[l][0] : pn[l] ? psx[l] / pn[l] : (x0[l] + x1[l]) / 2;
+    const ppy = ovPivot[l] ? ovPivot[l][1] : pn[l] ? psy[l] / pn[l] : y1[l];
+    Object.assign(c.style, {
+      left:   (x0[l] * s / STAGE_W * 100) + '%',
+      top:    ((yOff + y0[l] * s) / STAGE_H * 100) + '%',
+      width:  (S.bw * s / STAGE_W * 100) + '%',
+      height: (S.bh * s / STAGE_H * 100) + '%',
+      transformOrigin: ((ppx - x0[l]) / S.bw * 100) + '% ' + ((ppy - y0[l]) / S.bh * 100) + '%',
+    });
+    anchor.after(c); anchor = c;
+    // 葉ごとの乱数(同じ葉は毎回同じ値)
+    const r = m => { const v = Math.sin((leaves.length + 1) * 12.9898 * m) * 43758.5453; return v - Math.floor(v); };
+    const rec = { el: c, h1: r(1), h2: r(2.7), h3: r(5.1), h4: r(9.3), on: false,
+                  layer: layerName, s, yOff, bx: x0[l], by: y0[l], bw: S.bw, bh: S.bh, manual: !!ovPivot[l], still: !!still[l], dot: null,
+                  autoX: pn[l] ? psx[l] / pn[l] : (x0[l] + x1[l]) / 2, autoY: pn[l] ? psy[l] / pn[l] : y1[l] };   // 自動で求めた支点
+    leaves.push(rec);
+    if (DEBUG || EDIT) {
+      const dot = document.createElement('div'); dot.className = 'dot';
+      rec.dot = dot; placeDot(rec, ppx, ppy);
+      anchor.after(dot); anchor = dot;
+    }
+  }
+  console.log(`${img.src.split('/').pop()}: 塊 ${n}, 揺らす葉 ${cnt}, 大きすぎ ${tooBig}, 枝から遠い ${tooFar}`);
+}
+
+// 支点(レイヤー画像のpx)を、見た目の位置(点)と回転の中心(transform-origin)に反映する
+function placeDot(L, px, py){
+  L.px = px; L.py = py;
+  L.el.style.transformOrigin = ((px - L.bx) / L.bw * 100) + '% ' + ((py - L.by) / L.bh * 100) + '%';
+  if (L.dot) {
+    L.dot.style.left = (px * L.s / STAGE_W * 100) + '%';
+    L.dot.style.top  = ((L.yOff + py * L.s) / STAGE_H * 100) + '%';
+    L.dot.classList.toggle('manual', L.manual && !L.still);
+    L.dot.classList.toggle('still', !!L.still);
+  }
+}
+
+// ===== 編集モード(?edit) =====
+//  1回目のクリック: 直したい葉を選ぶ  2回目のクリック: 支点にしたい位置を指定
+//  Esc: 選択取り消し / 選択中に右クリック: その葉の手指定を削除
+function setupEditor(){
+  const hit = document.createElement('div'); hit.className = 'hit'; stage.appendChild(hit);
+  const sel = document.createElement('div'); sel.className = 'sel'; sel.style.display = 'none'; stage.appendChild(sel);
+
+  const panel = document.createElement('div');
+  Object.assign(panel.style, { position: 'fixed', top: '8px', right: '8px', width: '260px', padding: '10px',
+    background: 'rgba(0,0,0,.75)', color: '#fff', font: '13px/1.5 sans-serif', borderRadius: '6px', zIndex: 10 });
+  panel.innerHTML = `
+    <div id="msg"></div>
+    <div style="margin-top:6px">赤=自動 / 緑=手指定 / 灰=揺らさない</div>
+    <button id="still">選んだ葉を揺らさない</button>
+    <button id="copy">JSONをコピー</button>
+    <button id="dl">${PIVOT_FILE}を保存</button>
+    <button id="clr">手指定を全削除</button>
+    <div id="cnt" style="margin-top:4px"></div>`;
+  document.body.appendChild(panel);
+  const msg = panel.querySelector('#msg'), cnt = panel.querySelector('#cnt');
+
+  let cur = null;   // 選択中 { L, pt:[x,y] }
+  const toDesign = e => { const r = stage.getBoundingClientRect();
+    return [(e.clientX - r.left) / r.width * STAGE_W, (e.clientY - r.top) / r.height * STAGE_H]; };
+
+  function leafAt(dx, dy){
+    for (let i = leaves.length - 1; i >= 0; i--) {               // 手前の葉を優先
+      const L = leaves[i], lx = Math.floor(dx / L.s) - L.bx, ly = Math.floor((dy - L.yOff) / L.s) - L.by;
+      for (let r = 0; r <= 3; r++) for (let oy = -r; oy <= r; oy++) for (let ox = -r; ox <= r; ox++) {
+        const x = lx + ox, y = ly + oy;
+        if (x < 0 || y < 0 || x >= L.bw || y >= L.bh) continue;
+        if (L.el.getContext('2d').getImageData(x, y, 1, 1).data[3] > 30) return L;
+      }
+    }
+    return null;
+  }
+  const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(overrides)); } catch (e) {} };
+  const same = (o, L) => o.layer === L.layer && L.el.getContext('2d') &&
+      (() => { const lx = Math.round(o.leaf[0] / L.s) - L.bx, ly = Math.round((o.leaf[1] - L.yOff) / L.s) - L.by;
+               return lx >= 0 && ly >= 0 && lx < L.bw && ly < L.bh && L.el.getContext('2d').getImageData(lx, ly, 1, 1).data[3] > 0; })();
+  function text(){
+    msg.textContent = cur ? '② 支点にしたい位置をクリック(Escで取消)' : '① 直したい葉をクリック';
+    cnt.textContent = `手指定: ${overrides.length} 枚`;
+    if (cur) {
+      const L = cur.L; sel.style.display = '';
+      sel.style.left = (L.bx * L.s / STAGE_W * 100) + '%';
+      sel.style.top = ((L.yOff + L.by * L.s) / STAGE_H * 100) + '%';
+      sel.style.width = (L.bw * L.s / STAGE_W * 100) + '%';
+      sel.style.height = (L.bh * L.s / STAGE_H * 100) + '%';
+    } else sel.style.display = 'none';
+  }
+
+  // 選んだ葉を「揺らさない」にする(ボタン または Delete キー)
+  function setStill(){
+    if (!cur) { msg.textContent = '先に、揺らさない葉をクリックして選んでください'; return; }
+    const L = cur.L, o = { layer: L.layer, leaf: cur.pt, still: true };
+    const k = overrides.findIndex(q => same(q, L));
+    if (k >= 0) overrides[k] = o; else overrides.push(o);
+    L.still = true; L.manual = false; L.el.style.transform = '';
+    placeDot(L, L.px, L.py);
+    cur = null; save(); text();
+    msg.textContent = '揺らさない葉にしました';
+  }
+  panel.querySelector('#still').onclick = setStill;
+
+  hit.addEventListener('click', e => {
+    const [dx, dy] = toDesign(e);
+    if (!cur) {
+      const L = leafAt(dx, dy);
+      if (!L) { msg.textContent = '動かせる葉が見つかりません。葉の上をクリック'; return; }
+      cur = { L, pt: [Math.round(dx), Math.round(dy)] };
+    } else {
+      const L = cur.L, o = { layer: L.layer, leaf: cur.pt, pivot: [Math.round(dx * 10) / 10, Math.round(dy * 10) / 10] };
+      const k = overrides.findIndex(q => same(q, L));
+      if (k >= 0) overrides[k] = o; else overrides.push(o);
+      L.manual = true; L.still = false;
+      placeDot(L, dx / L.s, (dy - L.yOff) / L.s);
+      cur = null; save();
+    }
+    text();
+  });
+  hit.addEventListener('contextmenu', e => {
+    e.preventDefault(); if (!cur) return;
+    const L = cur.L;
+    overrides = overrides.filter(q => !same(q, L)); L.manual = false; L.still = false;
+    placeDot(L, L.autoX, L.autoY);          // 自動で求めた支点に戻す(揺れる状態にも戻る)
+    cur = null; save(); text();
+    msg.textContent = '手指定を削除しました(自動の位置に戻しました)';
+  });
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape') { cur = null; text(); }
+    if (e.key === 'Delete') setStill();
+  });
+
+  const json = () => JSON.stringify(overrides, null, 1);
+  panel.querySelector('#copy').onclick = () => { navigator.clipboard.writeText(json()); msg.textContent = 'コピーしました'; };
+  panel.querySelector('#dl').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([json()], { type: 'application/json' }));
+    a.download = PIVOT_FILE; a.click();
+  };
+  panel.querySelector('#clr').onclick = () => { overrides = []; cur = null; save(); location.reload(); };
+  text();
+}
+
+// ===== 揺らす(スクロールした時だけ) =====
+const rad = Math.PI / 180;
+let energy = 0, lastY = scrollY, moving = false;
+const t0 = performance.now();
+
+function frame(now){
+  const y = scrollY, v = EDIT ? 0 : y - lastY; lastY = y;   // 編集中は揺らさない
+  energy = Math.min(energy * DECAY + Math.abs(v) * SCROLL_GAIN, 1);
+  if (energy > 0.002) {
+    const t = (now - t0) / 1000;
+    for (const L of leaves) {
+      const env = L.still ? 0 : energy * (L.h4 < SCROLL_BOOST ? 0.9 : 0);
+      if (env < 0.001) { if (L.on) { L.el.style.transform = ''; L.on = false; } continue; }
+      const ang = (MIN_ANGLE + (MAX_ANGLE - MIN_ANGLE) * L.h3) * rad * env
+                * Math.sin(t * SWAY_SPEED * (1.6 + L.h1 * 1.6) + L.h2 * 6.2831);
+      L.el.style.transform = `rotate(${ang}rad)`; L.on = true;
+    }
+    moving = true;
+  } else if (moving) {
+    for (const L of leaves) { L.el.style.transform = ''; L.on = false; }
+    moving = false;
+  }
+  requestAnimationFrame(frame);
+}
+
+// ===== 鳥の目: 画面の上から EYE_LINE の位置より上に来たら開く =====
+function updateEye(){
+  const eye = document.getElementById('bird-eye');
+  const r = eye.getBoundingClientRect();
+  const open = (r.top + r.height / 2) < innerHeight * EYE_LINE;
+  eye.classList.toggle('open', open);
+}
+addEventListener('scroll', updateEye, { passive: true });
+addEventListener('resize', updateEye);
+updateEye();
+
+(async () => {
+  try {
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  // 手指定の支点を読み込む(編集モードでは編集途中の内容を優先)
+  try {
+    const saved = EDIT && localStorage.getItem(STORE_KEY);
+    overrides = saved ? JSON.parse(saved)
+              : await fetch(PIVOT_FILE, { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => []);
+  } catch (e) { overrides = []; }
+  if (!Array.isArray(overrides)) overrides = [];
+
+  const dist = distanceMap(readPixels(document.querySelector('img[data-role="tree"]')));
+  for (const img of document.querySelectorAll('img[data-sway]')) buildSway(img, dist);
+  if (EDIT) setupEditor();
+  } catch (e) { console.error('init failed:', e); }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+// ===== 滝の水の流れ =====
+// 滝の 3 段それぞれに、縦の筋を下へ流す。座標は canvas 内(lake.webp の (560,3400) を原点とした画像px)
+const FALL_TIERS = [            // x0,x1,y0,y1 = 水が落ちる範囲 / speed = 落ちる速さ(px/秒) / n = 筋の本数
+  { x0:170, x1:620, y0:185, y1:410, speed:150, n:46 },
+  { x0:190, x1:590, y0:460, y1:665, speed:170, n:40 },
+  { x0:120, x1:600, y0:855, y1:1010, speed:140, n:44 },
+];
+const FALL_ALPHA = 0.32;        // 筋の濃さ(0〜1)。大きいほどはっきり流れる
+(function(){
+  const cv = document.getElementById('fall'); if (!cv) return;
+  const g = cv.getContext('2d');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  FALL_TIERS.forEach(t => {
+    t.s = Array.from({ length: t.n }, () => ({
+      x: t.x0 + rnd() * (t.x1 - t.x0), w: 2 + rnd() * 6, len: 40 + rnd() * 80,
+      off: rnd() * 1000, v: 0.7 + rnd() * 0.6, dark: rnd() < 0.4 }));
+  });
+  let visible = false;
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; if (visible) requestAnimationFrame(draw); }).observe(cv);
+  function draw(ts){
+    if (!visible) return;
+    g.clearRect(0, 0, cv.width, cv.height);
+    const T = ts / 1000;
+    for (const t of FALL_TIERS) {
+      const H = t.y1 - t.y0;
+      g.save(); g.beginPath(); g.rect(t.x0, t.y0, t.x1 - t.x0, H); g.clip();
+      for (const s of t.s) {
+        const span = H + s.len;
+        const y = t.y0 - s.len + ((s.off + T * t.speed * s.v) % span);
+        const a = FALL_ALPHA * (s.dark ? 0.8 : 1);
+        const gr = g.createLinearGradient(0, y, 0, y + s.len);
+        const c = s.dark ? '20,110,120' : '215,255,250';
+        gr.addColorStop(0, 'rgba('+c+',0)'); gr.addColorStop(0.5, 'rgba('+c+','+a+')'); gr.addColorStop(1, 'rgba('+c+',0)');
+        g.fillStyle = gr; g.fillRect(s.x, y, s.w, s.len);
+      }
+      g.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+})();
+</script>
+<script>
+// ===== 金色の枝のランダムな揺れ =====
+// 周期の違う波を何本か足して、規則的に見えない揺れにする(スクロールとは無関係)
+const BRANCH_SWAY = 1.5;        // 揺れる角度の目安(度)。大きいほど大きく揺れる
+const BRANCH_SPEED = 1;         // 揺れの速さ(大きいほど速い)
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const items = [...document.querySelectorAll('.branch')].map(el => ({
+    el, waves: [0, 1, 2].map(() => ({ f: rnd(0.08, 0.3), p: rnd(0, 6.28), a: rnd(0.4, 1) }))
+  }));
+  let visible = false;
+  const vis = new Set();
+  const io = new IntersectionObserver(e => { e.forEach(x => x.isIntersecting ? vis.add(x.target) : vis.delete(x.target)); const v = vis.size > 0; if (v && !visible) { visible = true; requestAnimationFrame(tick); } visible = v; },
+    { rootMargin: '200px' });
+  items.forEach(it => io.observe(it.el));
+  function tick(ts){
+    if (!visible) return;
+    const t = ts / 1000 * BRANCH_SPEED;
+    for (const it of items) {
+      let v = 0, sum = 0;
+      for (const w of it.waves) { v += w.a * Math.sin(t * w.f * 6.283 + w.p); sum += w.a; }
+      it.el.style.transform = 'rotate(' + (v / sum * BRANCH_SWAY).toFixed(3) + 'deg)';
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+<script>
+// ===== 星の小さな粒の明滅 =====
+// sky-dots.webp は、sky.webp から小さな粒だけを切り出した画像。TWINKLE_DOTS = 粒ごとの [x, y, 幅, 高さ](画像px)
+const TWINKLE_MIN   = 0.1;      // 一番暗いときの明るさ(0〜1)
+const TWINKLE_SPEED = 1;        // 明滅の速さ(大きいほど速い)
+const TWINKLE_DOTS = [[618,-1,8,6],[751,-1,8,5],[1052,-1,4,3],[1248,-1,8,4],[24,4,8,8],[832,8,9,9],[882,19,5,5],[607,32,9,8],[235,40,6,6],[569,42,5,5],[707,42,7,7],[842,49,8,7],[1092,49,6,6],[645,64,8,7],[341,68,8,7],[906,69,6,6],[472,73,4,5],[844,73,8,8],[818,77,3,3],[596,78,5,5],[587,80,6,6],[1233,83,5,5],[893,85,8,8],[493,91,7,7],[1,96,8,8],[404,113,4,4],[416,113,7,7],[608,114,5,4],[197,118,5,5],[778,125,6,7],[809,127,7,7],[893,130,8,8],[1126,140,9,8],[867,143,8,8],[769,144,8,8],[938,145,9,9],[272,154,4,4],[651,176,8,7],[394,185,4,4],[1039,189,8,7],[1031,190,4,4],[461,194,6,5],[1088,198,7,7],[707,200,7,8],[1300,200,6,6],[587,210,4,4],[995,220,5,6],[795,229,6,6],[300,235,4,4],[801,235,4,4],[711,246,4,4],[515,252,4,4],[686,277,5,5],[571,280,7,8],[1008,282,3,3],[1073,287,7,7],[562,289,5,5],[1215,293,7,7],[822,313,3,3],[314,327,4,5],[614,332,4,4],[806,336,9,8],[296,345,6,7],[459,351,5,5],[697,368,9,9],[647,373,3,4],[461,387,9,9],[1068,406,4,5],[1157,432,4,3],[1519,449,3,3],[955,453,5,4],[1374,463,7,7],[1586,494,7,6],[1483,498,3,4],[775,500,3,4],[1084,514,9,9],[1538,547,3,4],[506,558,3,3],[1577,563,7,8],[1108,583,4,3],[1074,584,4,4],[385,601,7,6],[1117,616,8,8],[671,617,7,7],[1204,625,3,4],[1529,630,7,6],[1520,640,7,7],[1370,656,7,7],[1083,759,5,5],[1575,760,5,5],[1557,764,4,5],[1272,815,9,8],[1055,848,6,5],[1425,895,4,4],[1384,909,3,4],[1426,921,7,7],[1537,967,4,4],[1101,969,6,6],[1444,974,8,8],[1589,978,6,6],[1478,990,7,7],[1467,996,4,4],[1338,1007,5,5],[1398,1028,8,9],[1077,1054,5,5],[1505,1060,6,6],[1507,1068,7,6],[1533,1099,6,6],[1089,1101,3,3],[1267,1120,7,7],[819,1173,5,5],[1349,1204,6,6],[1503,1213,3,3],[1087,1215,8,8],[1462,1234,8,8],[1026,1274,7,7],[1422,1286,7,7],[1294,1290,9,9],[1448,1298,9,9],[1586,1321,4,4],[1568,1330,7,7],[-1,1353,6,5],[140,1365,6,6],[1340,1374,8,9],[103,1416,6,5],[1217,1460,5,5],[1376,1502,9,9],[298,1567,6,6],[29,1620,3,4],[510,1705,7,6],[136,1747,3,3],[356,1754,5,5],[36,1774,3,3],[116,1774,5,6],[122,1777,3,3],[35,1821,3,4],[165,1838,3,3],[4,1862,9,8],[138,1869,6,6],[710,1872,7,8],[407,1877,5,6],[86,1894,5,5],[80,1905,8,7],[172,1912,8,7],[506,1917,7,6],[238,1922,7,7],[57,1927,6,6],[376,1951,5,5],[260,1955,3,3],[53,1965,6,6],[565,1986,8,9],[12,2008,10,9],[244,2008,9,9],[238,2014,8,8],[87,2026,6,6],[67,2031,4,4],[939,2034,4,4],[48,2055,8,8],[489,2076,5,5],[139,2085,9,8],[71,2093,6,6],[701,2093,4,3],[92,2094,7,7],[295,2094,5,6],[509,2118,3,3],[6,2133,3,3],[102,2140,5,4],[22,2185,6,5],[463,2228,5,5],[545,2228,9,9],[40,2250,4,3]];
+(function(){
+  const cv = document.getElementById('twinkle'); if (!cv) return;
+  const g = cv.getContext('2d');
+  const img = new Image(); img.src = 'layers/sky-dots.webp';
+  const ps = TWINKLE_DOTS.map(() => ({ f: 0.25 + Math.random() * 0.9, p: Math.random() * 6.283 }));
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let visible = false, ready = false;
+  img.onload = () => { ready = true; if (visible) requestAnimationFrame(tick); };
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; if (visible && ready) requestAnimationFrame(tick); }).observe(cv);
+  function tick(ts){
+    if (!visible || !ready) return;
+    const t = ts / 1000 * TWINKLE_SPEED;
+    g.clearRect(0, 0, cv.width, cv.height);
+    TWINKLE_DOTS.forEach((d, i) => {
+      const k = still ? 1 : TWINKLE_MIN + (1 - TWINKLE_MIN) * Math.pow(0.5 + 0.5 * Math.sin(t * ps[i].f * 6.283 + ps[i].p), 1.5);
+      g.globalAlpha = k;
+      g.drawImage(img, d[0], d[1], d[2], d[3], d[0], d[1], d[2], d[3]);
+    });
+    if (!still) requestAnimationFrame(tick);
+  }
+})();
+</script>
+<script>
+// ===== 山の下の影の揺れ =====
+// 水(mizu.webp)の山の下の部分(lake 座標 y=1960〜3300)を細い横帯に分け、帯ごとに左右へゆっくりずらして、影を揺らす
+const SHADOW_AMP   = 8;         // 横に揺れる幅(画像px。1600px幅のとき)。大きいほど大きく揺れる
+const SHADOW_SPEED = 1;         // 揺れの速さ(大きいほど速い)
+const SHADOW_STRIP = 4;         // 帯の高さ(画像px)。小さいほど滑らかだが重い
+(function(){
+  const cv = document.getElementById('shadow'); if (!cv) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const g = cv.getContext('2d'), SRC_Y = 30, W = cv.width, H = cv.height;   // SRC_Y = mizu.webp の中での開始位置(mizu.webp は lake 座標 y=1930 から)
+  const img = new Image(); img.src = 'layers/mizu.webp';
+  let visible = false, ready = false, last = 0;
+  img.onload = () => { ready = true; if (visible) requestAnimationFrame(tick); };
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; if (visible && ready) requestAnimationFrame(tick); }).observe(cv);
+  function tick(ts){
+    if (!visible || !ready) return;
+    requestAnimationFrame(tick);
+    if (ts - last < 33) return; last = ts;          // 約30fps
+    const t = ts / 1000 * SHADOW_SPEED;
+    g.clearRect(0, 0, W, H);
+    for (let y = 0; y < H; y += SHADOW_STRIP) {
+      const h = Math.min(SHADOW_STRIP, H - y);
+      const fade = Math.min(1, y / 80, (H - y) / 80);  // 上端と下端では揺らさない(周りと繋がるように)
+      const dx = SHADOW_AMP * fade * (Math.sin(y * 0.012 + t * 0.9) * 0.6 + Math.sin(y * 0.005 - t * 0.5 + 1.3) * 0.4);
+      g.drawImage(img, 0, SRC_Y + y, W, h, dx, y, W, h);
+    }
+  }
+})();
+</script>
+<script>
+// ===== きらきらの瞬き =====
+// kirakira2(山・湖の小さな粒)と kirakira3(水面の光の筋)を、光の粒(まとまり)ごとに別々のタイミングで瞬かせる。kirakira3 はゆっくり。
+// KIRA_RECTS = 粒ごとの [x, y, 幅, 高さ](各画像の中のpx)
+const KIRA_MIN   = 0.5;         // 一番暗いときの明るさ(0〜1)。小さいほどはっきり消える
+const KIRA_SPEED = 1;           // 瞬きの速さ(大きいほど速い)
+const KIRA_SHARP = 2.5;         // 大きいほど「ぱっと光ってすぐ消える」瞬きになる(1 でゆるやか)
+// 画像ごとの設定: max = 一番明るいときの明るさ(1 より小さくすると薄くなる) / speed = 瞬きの速さの倍率(大きいほど細かく速く瞬く)
+const KIRA_OPTS = {
+  kirakira2: { max: 0.55, speed: 1.8 },
+  kirakira3: { max: 1,    speed: 0.35 },   // ゆっくり点滅
+};
+const KIRA_RECTS = {
+  kirakira2: [[230,6,12,12],[382,26,12,16],[214,38,24,32],[274,62,16,12],[306,90,28,16],[238,94,12,8],[182,126,16,16],[2,146,8,12],[450,154,8,8],[378,158,8,12],[126,170,8,8],[166,178,8,8],[242,178,12,16],[82,190,8,8],[54,198,12,12],[378,202,12,12],[302,210,12,12],[98,222,8,8],[202,222,12,12],[570,226,20,32],[154,234,8,8],[446,238,16,12],[1198,242,12,12],[230,250,8,8],[358,262,12,12],[242,266,12,16],[38,286,20,20],[170,286,16,16],[250,290,16,16],[438,306,12,12],[158,310,8,8],[206,310,12,12],[38,334,20,24],[994,338,12,8],[2,342,16,20],[358,350,12,12],[1278,350,12,12],[430,362,12,16],[1330,374,16,16],[282,378,16,16],[622,382,12,12],[1222,382,12,12],[1014,398,16,16],[1298,398,12,12],[1382,398,8,8],[198,402,24,20],[150,406,12,12],[574,406,16,16],[1094,414,16,12],[126,418,8,8],[1182,418,12,16],[1214,418,8,12],[102,422,36,28],[306,430,8,8],[1234,430,12,12],[246,438,16,16],[1338,438,8,8],[378,442,16,16],[1170,446,12,12],[1146,450,12,12],[86,454,12,12],[1254,458,12,12],[154,462,12,12],[1426,466,8,12],[1550,466,12,16],[1274,474,12,12],[102,478,16,16],[1494,478,16,12],[1350,482,8,8],[426,486,8,8],[1062,490,8,12],[298,498,12,12],[1258,498,12,8],[150,506,8,8],[342,510,16,16],[1414,510,16,16],[58,514,12,8],[1074,514,8,8],[1266,514,12,12],[1466,518,16,16],[1314,522,16,16],[1030,534,8,12],[1102,542,16,16],[1330,546,24,16],[1594,546,4,12],[366,550,12,12],[122,554,16,12],[1174,562,16,16],[270,570,16,16],[1290,578,16,16],[394,582,8,12],[1450,594,8,12],[1390,598,16,12],[1514,602,28,24],[1102,606,8,8],[266,610,12,12],[1266,614,16,16],[1298,626,12,12],[1362,630,16,12],[1518,642,12,12],[1130,650,16,16],[1262,650,16,16],[1494,650,20,24],[1062,654,28,24],[1378,654,24,16],[1422,654,8,8],[1318,662,8,12],[1010,666,8,12],[1478,670,8,8],[1246,674,16,16],[1286,674,16,12],[1406,674,12,8],[330,678,8,8],[278,686,12,12],[1366,698,8,8],[1034,702,8,12],[1078,702,16,12],[1322,714,12,12],[1358,714,28,28],[1406,714,8,12],[1206,718,24,24],[1266,718,8,8],[1470,726,24,28],[1250,738,16,12],[1342,750,16,16],[1582,754,12,16],[950,762,8,12],[1486,762,8,8],[1242,766,12,16],[1146,774,12,8],[1334,778,8,8],[1502,778,16,16],[1574,778,12,12],[1022,794,8,8],[1166,794,12,12],[1594,802,4,12],[1274,810,8,12],[1342,810,8,8],[1574,810,8,8],[1186,814,16,16],[1234,814,12,12],[1406,818,12,12],[1138,822,12,8],[1306,830,12,12],[1318,846,16,12],[1262,850,12,12],[1586,854,8,8],[1122,870,12,16],[1254,870,16,16],[1530,870,12,12],[1186,886,8,8],[1454,886,12,16],[1514,886,12,12],[1334,890,12,12],[1386,890,12,12],[1418,890,20,16],[1478,918,16,12],[1566,926,8,8],[1270,930,16,16],[1390,938,24,24],[1442,938,24,16],[1434,966,12,12],[1502,966,8,8],[2,970,12,12],[82,974,12,12],[1362,974,12,12],[1238,978,12,12],[1574,978,12,16],[1474,994,16,16],[314,1006,8,12],[158,1018,12,16],[1534,1018,12,8],[1322,1030,24,24],[1370,1038,8,8],[1518,1038,8,8],[1534,1038,24,20],[210,1070,8,8],[1510,1074,8,8],[1402,1082,12,12],[30,1094,8,8],[114,1102,12,12],[1558,1106,12,12],[1534,1110,8,8],[1182,1114,16,16],[1442,1118,8,8],[1570,1122,8,8],[1138,1126,8,8],[1394,1134,12,12],[1418,1134,12,12],[1490,1142,16,20],[1122,1158,16,12],[170,1166,12,12],[1074,1170,16,16],[1538,1170,12,12],[1350,1178,16,16],[1474,1186,16,16],[18,1190,12,12],[1558,1190,12,16],[122,1194,12,12],[158,1194,24,16],[1278,1194,28,20],[1374,1202,12,12],[1462,1210,12,12],[2,1226,12,12],[1258,1226,8,8],[1410,1226,16,28],[1442,1226,8,12],[26,1230,8,8],[1494,1230,8,8],[66,1234,16,16],[1578,1234,16,12],[162,1246,28,20],[1390,1254,8,12],[1534,1254,12,8],[50,1258,8,12],[1226,1258,12,8],[2,1270,4,12],[1390,1282,12,12],[1410,1286,8,12],[10,1290,12,12],[1454,1298,12,16],[1538,1298,8,12],[106,1302,8,8],[134,1306,16,16],[10,1310,16,16],[262,1314,16,16],[1502,1318,16,16],[42,1326,16,32],[1322,1330,24,20],[1274,1334,12,12],[1470,1342,12,12],[1586,1346,12,12],[1258,1366,8,12],[90,1378,16,16],[186,1378,12,12],[1398,1378,12,12],[1526,1378,16,16],[242,1382,12,16],[1338,1386,8,8],[1506,1386,12,12],[50,1394,16,12],[202,1394,16,16],[1278,1406,12,12],[1370,1410,16,16],[1334,1426,12,8],[1434,1430,12,16],[226,1438,16,16],[42,1446,12,12],[1226,1446,12,8],[1414,1450,8,12],[1490,1454,8,8],[58,1462,24,32],[1138,1462,12,12],[6,1482,12,12],[1498,1522,16,20],[90,1530,12,12],[426,1534,12,12],[1358,1550,12,8],[22,1566,32,28],[106,1566,16,24],[326,1582,8,8],[1298,1594,16,16],[526,1610,8,12],[26,1614,12,16],[158,1614,8,12],[306,1618,12,12],[182,1630,12,12],[474,1638,8,8],[262,1654,12,16],[110,1670,20,20],[46,1678,12,16],[66,1694,16,20],[166,1694,8,12],[370,1694,8,8],[422,1698,12,12],[326,1714,8,8],[142,1718,16,16],[182,1722,8,8],[350,1726,12,12],[302,1730,12,12],[386,1730,12,8],[722,1734,8,8],[530,1742,12,12],[182,1750,16,16],[342,1758,12,12],[2,1770,12,8],[590,1770,8,8],[230,1774,16,12],[166,1790,8,8],[182,1790,12,12],[498,1794,16,16],[206,1798,24,20],[638,1802,12,16],[330,1806,20,28],[826,1806,12,12],[6,1810,24,16],[62,1814,8,8],[174,1818,16,12],[242,1822,8,8],[198,1826,16,16],[402,1826,12,16],[54,1830,8,8],[2,1850,28,28],[50,1850,20,20],[554,1850,12,8],[198,1858,12,12],[266,1874,16,16],[350,1874,12,12],[466,1874,20,24],[562,1878,12,12],[874,1882,12,12],[614,1886,12,12],[426,1890,12,16],[202,1894,12,12],[318,1898,12,16],[58,1902,12,12],[186,1902,8,8],[74,1922,24,24],[742,1922,8,8],[622,1930,8,12],[250,1938,8,8],[494,1938,12,12],[326,1942,8,12],[126,1950,12,8],[194,1950,12,8],[382,1950,12,12],[706,1958,16,20],[178,1962,8,8],[610,1970,16,16],[438,1974,12,24],[458,1974,12,8],[654,1978,12,12],[482,1986,12,16],[394,1990,16,16],[26,1994,16,12],[98,1994,24,32],[322,2002,12,12],[554,2006,12,12],[42,2014,12,12],[282,2014,12,16],[354,2030,16,12],[318,2034,12,12],[514,2050,16,12],[198,2062,12,12],[566,2066,20,20],[334,2070,12,16],[134,2074,16,16],[730,2074,8,8],[270,2082,12,16],[886,2090,8,8],[558,2138,16,20],[54,2150,8,8],[358,2158,28,16],[314,2166,16,16],[210,2170,8,8],[618,2174,16,16],[402,2246,12,12],[634,2370,12,12]],
+  kirakira3: [[298,10,16,12],[350,26,12,12],[218,62,12,16],[102,70,12,12],[306,78,8,12],[258,82,16,20],[150,118,16,12],[158,138,8,12],[194,146,16,16],[46,154,16,16],[282,158,8,8],[174,166,16,12],[138,170,8,8],[230,170,24,24],[310,170,12,16],[178,186,8,8],[386,190,12,12],[122,198,16,16],[230,202,56,40],[294,206,32,20],[366,218,12,8],[398,230,16,16],[1338,230,16,16],[170,234,8,12],[366,234,8,12],[186,246,8,8],[1310,246,24,16],[98,250,24,16],[230,250,28,36],[1450,254,16,16],[18,278,28,20],[58,278,16,16],[210,278,28,32],[570,278,12,12],[326,286,8,12],[290,290,16,12],[1354,294,8,8],[130,302,8,8],[170,314,12,12],[238,350,8,8],[286,350,12,12],[1314,358,16,16],[66,370,12,12],[186,390,16,16],[1374,390,8,8],[1250,394,8,8],[1270,406,28,24],[1034,426,12,12],[1422,430,12,12],[1342,442,12,12],[1142,450,12,12],[1358,454,16,16],[798,466,28,24],[1402,466,16,20],[1026,498,12,12],[1142,502,12,16],[1106,506,28,24],[894,514,12,12],[1006,518,12,12],[1078,518,12,16],[1186,518,12,12],[730,526,16,12],[990,538,12,8],[686,542,8,8],[926,542,12,24],[1006,546,28,20],[810,550,8,8],[1058,554,20,24],[242,558,320,36],[778,566,8,8],[1098,566,16,20],[26,570,8,12],[1026,578,24,36],[858,582,12,16],[954,582,12,12],[658,586,12,12],[726,594,12,8],[922,594,16,16],[998,594,16,12],[822,610,12,16],[42,614,16,16],[1010,614,16,20],[754,622,16,12],[1126,622,20,20],[1078,630,24,16],[50,638,12,12],[74,638,8,12],[826,646,16,16],[750,650,16,16],[1002,650,12,12],[1050,650,16,16],[906,654,16,16],[726,674,12,12],[1002,674,12,12],[842,678,24,28],[10,682,16,16],[938,686,8,8],[66,702,8,8],[1206,702,12,12],[1070,706,12,12],[1090,706,8,8],[830,714,16,12],[66,718,16,12],[1046,718,12,8],[742,734,16,16],[34,738,8,12],[1190,738,12,16],[1218,738,12,12],[2,742,4,12],[1090,758,16,16],[226,766,428,44],[866,774,12,12],[1082,798,12,12],[1054,806,12,12],[54,818,8,8],[954,822,12,16],[1130,842,8,12],[1018,846,8,8],[26,858,8,8],[1210,858,16,16],[1018,862,12,16],[58,870,12,12],[1098,886,40,48],[990,910,8,8],[518,914,384,28],[1082,962,12,12],[302,966,400,44],[710,982,56,24],[1138,986,16,16],[1098,1034,16,16],[802,1070,288,28],[1098,1078,16,16]]
+};
+(function(){
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('canvas.kira').forEach(cv => {
+    const rects = KIRA_RECTS[cv.id]; if (!rects) return;
+    const g = cv.getContext('2d'), img = new Image(); img.src = cv.dataset.src;
+    const o = KIRA_OPTS[cv.id] || { max: 1, speed: 1 };
+    const ps = rects.map(() => ({ f: 0.3 + Math.random() * 0.9, p: Math.random() * 6.283 }));
+    let visible = false, ready = false, last = 0;
+    img.onload = () => { ready = true; if (visible) requestAnimationFrame(tick); };
+    new IntersectionObserver(e => { visible = e[0].isIntersecting; if (visible && ready) requestAnimationFrame(tick); }).observe(cv);
+    function tick(ts){
+      if (!visible || !ready) return;
+      if (!still) requestAnimationFrame(tick);
+      if (ts - last < 33) return; last = ts;       // 約30fps
+      const t = ts / 1000 * KIRA_SPEED * o.speed;
+      g.clearRect(0, 0, cv.width, cv.height);
+      for (let i = 0; i < rects.length; i++) {
+        const r = rects[i];
+        g.globalAlpha = still ? o.max : o.max * (KIRA_MIN + (1 - KIRA_MIN) * Math.pow(0.5 + 0.5 * Math.sin(t * ps[i].f * 6.283 + ps[i].p), KIRA_SHARP));
+        g.drawImage(img, r[0], r[1], r[2], r[3], r[0], r[1], r[2], r[3]);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

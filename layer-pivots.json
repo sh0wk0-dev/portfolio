@@ -1,0 +1,700 @@
+[
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   455,
+   1613
+  ],
+  "pivot": [
+   456.1,
+   1643.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   548,
+   1670
+  ],
+  "pivot": [
+   471.1,
+   1674.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   534,
+   1597
+  ],
+  "pivot": [
+   507.6,
+   1619.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   271,
+   1743
+  ],
+  "pivot": [
+   251.3,
+   1694.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   309,
+   1559
+  ],
+  "pivot": [
+   246.2,
+   1565.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   144,
+   1319
+  ],
+  "pivot": [
+   144.5,
+   1387
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   288,
+   1341
+  ],
+  "pivot": [
+   270.1,
+   1397.1
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   639,
+   1338
+  ],
+  "pivot": [
+   581.7,
+   1392
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   769,
+   1477
+  ],
+  "pivot": [
+   693.5,
+   1501.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   668,
+   1555
+  ],
+  "pivot": [
+   620.6,
+   1537.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   389,
+   1651
+  ],
+  "pivot": [
+   427.2,
+   1694.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   518,
+   1749
+  ],
+  "still": true
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   617,
+   1820
+  ],
+  "pivot": [
+   528.9,
+   1844.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   627,
+   1653
+  ],
+  "pivot": [
+   636.6,
+   1705.1
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   703,
+   1600
+  ],
+  "pivot": [
+   677.1,
+   1644.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   675,
+   1718
+  ],
+  "pivot": [
+   622.5,
+   1748.2
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   854,
+   1632
+  ],
+  "pivot": [
+   807.1,
+   1663.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   803,
+   1702
+  ],
+  "pivot": [
+   766.7,
+   1703.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   757,
+   1751
+  ],
+  "pivot": [
+   764.6,
+   1808.2
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   822,
+   1820
+  ],
+  "pivot": [
+   787.5,
+   1807.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   886,
+   1765
+  ],
+  "pivot": [
+   858.9,
+   1762.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   969,
+   1696
+  ],
+  "pivot": [
+   921.6,
+   1725.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1050,
+   1628
+  ],
+  "pivot": [
+   1059,
+   1680.2
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1073,
+   1758
+  ],
+  "pivot": [
+   1035.5,
+   1764.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1043,
+   1875
+  ],
+  "pivot": [
+   993.7,
+   1888.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   930,
+   1873
+  ],
+  "pivot": [
+   935.7,
+   1914.6
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   744,
+   1938
+  ],
+  "pivot": [
+   739.7,
+   1984.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   819,
+   1956
+  ],
+  "pivot": [
+   784.8,
+   1968.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   292,
+   1915
+  ],
+  "pivot": [
+   282.3,
+   1954.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   96,
+   1914
+  ],
+  "pivot": [
+   107.8,
+   1973.2
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   30,
+   2011
+  ],
+  "pivot": [
+   29,
+   2083.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   63,
+   2027
+  ],
+  "pivot": [
+   62,
+   2028.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   63,
+   2091
+  ],
+  "pivot": [
+   66.7,
+   2091.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   75,
+   2210
+  ],
+  "pivot": [
+   76.1,
+   2211
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   184,
+   2176
+  ],
+  "pivot": [
+   184.6,
+   2174
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   244,
+   1983
+  ],
+  "pivot": [
+   256.7,
+   2017
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   329,
+   2004
+  ],
+  "pivot": [
+   277.6,
+   2022.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   186,
+   2176
+  ],
+  "pivot": [
+   185.9,
+   2172
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   244,
+   2132
+  ],
+  "pivot": [
+   231.7,
+   2133.6
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   377,
+   2200
+  ],
+  "pivot": [
+   307.9,
+   2172
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   241,
+   2222
+  ],
+  "pivot": [
+   241.2,
+   2221.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   439,
+   2122
+  ],
+  "pivot": [
+   412.3,
+   2119.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   459,
+   2007
+  ],
+  "pivot": [
+   398.1,
+   2078.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1071,
+   2061
+  ],
+  "pivot": [
+   1057.7,
+   2026.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   975,
+   2117
+  ],
+  "pivot": [
+   951.9,
+   2182.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   901,
+   2227
+  ],
+  "pivot": [
+   904.8,
+   2243.4
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   960,
+   2237
+  ],
+  "pivot": [
+   916.9,
+   2245.4
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   1019,
+   2262
+  ],
+  "pivot": [
+   969.4,
+   2315.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   901,
+   2325
+  ],
+  "pivot": [
+   910.8,
+   2363.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   825,
+   2303
+  ],
+  "pivot": [
+   840.8,
+   2361.9
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   916,
+   2377
+  ],
+  "pivot": [
+   916.9,
+   2378.1
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1072,
+   2377
+  ],
+  "pivot": [
+   1061.7,
+   2417.9
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   1016,
+   2487
+  ],
+  "pivot": [
+   1015.9,
+   2485.9
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   949,
+   2551
+  ],
+  "pivot": [
+   926.3,
+   2612.5
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   975,
+   2631
+  ],
+  "pivot": [
+   943.2,
+   2609.2
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   1044,
+   2575
+  ],
+  "pivot": [
+   980.2,
+   2587.6
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   812,
+   2911
+  ],
+  "pivot": [
+   830.7,
+   2888.8
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   792,
+   3088
+  ],
+  "pivot": [
+   784.8,
+   3032.3
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   945,
+   3052
+  ],
+  "pivot": [
+   907.5,
+   3008.7
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   934,
+   2948
+  ],
+  "pivot": [
+   861.6,
+   2927.2
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   1012,
+   2916
+  ],
+  "pivot": [
+   1011.9,
+   2841.6
+  ]
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   158,
+   2037
+  ],
+  "still": true
+ },
+ {
+  "layer": "leaves.webp",
+  "leaf": [
+   196,
+   1476
+  ],
+  "pivot": [
+   153.3,
+   1525.2
+  ]
+ },
+ {
+  "layer": "leaves-sparse.webp",
+  "leaf": [
+   976,
+   2760
+  ],
+  "pivot": [
+   972.4,
+   2764
+  ]
+ }
+]
