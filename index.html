@@ -16,7 +16,7 @@
   #stage {
     position: relative;
     width: 100%;
-    --h: 6800;                       /* ページ全体の高さ(設計座標)。大きくすると下にスクロールできる範囲が増える */
+    --h: 9103;                       /* ページ全体の高さ(設計座標)。大きくすると下にスクロールできる範囲が増える */
     aspect-ratio: calc(1088 / var(--h));
     overflow: hidden;
     background: #000;
@@ -62,6 +62,12 @@
     #stage .foam1, #stage .foam2, #stage .tsubo { animation: none; }
     #stage .foam2, #stage .tsubo2, #stage .tsubo3 { opacity: 0; } #stage .tsubo1 { opacity: 1; }
   }
+  /* 枝先の波紋(水を飲む鳥): a と b を 1.2s で交互に切り替える(a=0〜50%、b=50〜100%)。1.2s を小さくすると速くなる */
+  #stage .tip-a { animation: tipA 1.2s steps(1, end) infinite; }
+  #stage .tip-b { animation: tipB 1.2s steps(1, end) infinite; }
+  @keyframes tipA { 0% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes tipB { 0% { opacity: 0; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { #stage .tip-a, #stage .tip-b { animation: none; } #stage .tip-b { opacity: 0; } }
   /* kirakira: 全体がいっせいに、小さくぶるぶる震える(点滅はしない)。0.6s = 震えの 1 周の長さ(小さいほど速い)。
      translate の % は画像の幅(設計座標 1088px)に対する割合で、0.054% ≒ 0.6px。数字を大きくすると震えが大きくなる */
   #stage .kira-all { animation: kiraShake 0.6s steps(1, end) infinite, kiraShrink 1s ease-in-out infinite alternate; }  /* 震え + ほんの少し縮んで戻る(1s = 縮む→戻る の半周) */
@@ -103,6 +109,7 @@
   <img class="layer" src="layers/sora.webp" style="--x:0; --y:2396.3; --w:1088" alt=""> <!-- 日の出の空と月のもや(lake 座標 y=0 が --y:2396.3。以降の「湖の部品」はすべて 1600x6476 の同じ座標系から行を切り出したもの) -->
   <img class="layer" src="layers/mizu.webp" style="--x:0; --y:3708.7; --w:1088" alt=""> <!-- 水面 -->
   <canvas class="layer" id="shadow" width="1600" height="1340" style="--x:0; --y:3729.1; --w:1088"></canvas> <!-- 山の下の影(mizu.webp の y=1960〜3300 を、横の帯ごとに少しずらして描き直す。山 yama はこの上に重なる) -->
+  <img class="layer" src="layers/mizu-lower.webp" style="--x:0; --y:6047; --w:1088" alt=""> <!-- 下の湖の水面(新しい絵。上端は mizu.webp と同じ模様でつながる。滝つぼの波紋 takitsubo はこの上に重なる。画像は 712px 幅) -->
   <img class="layer tsubo tsubo1" src="layers/takitsubo1.webp" style="--x:0; --y:5415.5; --w:1088" alt=""> <!-- 滝つぼの波紋 1→2→3→2 と繰り返す。岩(苔)の後ろに置く -->
   <img class="layer tsubo tsubo2" src="layers/takitsubo2.webp" style="--x:0; --y:5415.5; --w:1088" alt="">
   <img class="layer tsubo tsubo3" src="layers/takitsubo3.webp" style="--x:0; --y:5415.5; --w:1088" alt="">
@@ -118,13 +125,20 @@
   <img class="layer" src="layers/bird.webp"          style="--x:0; --y:1217; --w:1088" alt=""> <!-- 鳥 -->
   <img class="layer eye" id="bird-eye" src="layers/bird-eye.webp" style="--x:610; --y:2343; --w:42" alt=""> <!-- 鳥の開いた目(スクロールで現れる)。元の画像の (610,1126) から 42x38px を切り出したもの -->
   <img class="layer" src="layers/leaves-sparse.webp" style="--x:0; --y:1217; --w:1088" alt="" data-sway> <!-- 葉(まばら) -->
+  <!-- ===== 下の絵: 水を飲む鳥(見本 tori_4.png の座標から、--y = 4906.6 + 見本のy × 0.68 で換算) ===== -->
+  <img class="layer tip-a" src="layers/tip-ripple-a.webp" style="--x:494.4; --y:6731; --w:393" alt=""> <!-- 枝先の波紋(a と b が 1.2 秒ごとに切り替わる) -->
+  <img class="layer tip-b" src="layers/mizu-lower-b.webp" style="--x:466.1; --y:6699.5; --w:460" alt=""> <!-- 波紋 b のときの水面の暗い筋(mizu-lower.webp の同じ位置に重ねて差し替える) -->
+  <img class="layer tip-b" src="layers/tip-ripple-b.webp" style="--x:490.3; --y:6720.2; --w:401.2" alt="">
+  <img class="layer" src="layers/branch-drink.webp" style="--x:0; --y:5846.4; --w:956.8" alt="" data-role="tree2"> <!-- 下の枝(葉 leaves-drink の揺れの基準にもなる) -->
+  <img class="layer" src="layers/bird-drink.webp" style="--x:42.8; --y:6102; --w:750.7" alt=""> <!-- 水を飲む鳥 -->
+  <img class="layer" src="layers/leaves-drink.webp" style="--x:134.6; --y:5699.5; --w:806.5" alt="" data-sway data-tree="tree2" data-max-area="40000" data-max-gap="150"> <!-- 下の枝の葉(スクロールで揺れる) -->
   <img class="layer foam1" src="layers/taki1.webp" style="--x:0; --y:4912.3; --w:1088" alt=""> <!-- 滝のしぶき(taki1 と taki2 が交互に切り替わる) -->
   <img class="layer foam2" src="layers/taki2.webp" style="--x:0; --y:4912.3; --w:1088" alt="">
   <img class="layer branch" src="layers/ki2-left.webp" style="--x:-54.4; --y:4245.9; --w:598.4; transform-origin:9.09% 39.0%" alt=""> <!-- 金色の枝(ki2=上の枝、ki1=下の枝。左右に分けて、枝ごとにゆっくり揺れる。画像はページの端の外へ 80px 延長してある) -->
   <img class="layer branch" src="layers/ki2-right.webp" style="--x:544; --y:4245.9; --w:598.4; transform-origin:90.91% 57.5%" alt="">
   <img class="layer branch" src="layers/ki1-left.webp" style="--x:-54.4; --y:4517.9; --w:598.4; transform-origin:9.09% 46.9%" alt="">
   <img class="layer branch" src="layers/ki1-right.webp" style="--x:544; --y:4517.9; --w:598.4; transform-origin:90.91% 69.9%" alt="">
-  <p class="ending" style="--y:6500; --fs:30">To be continued</p> <!-- 最下部の水の中央の文字 -->
+  <p class="ending" style="--y:8800; --fs:30">To be continued</p> <!-- 最下部の水の中央の文字 -->
 </div>
 
 <script>
@@ -185,12 +199,22 @@ function distanceMap(px){
 }
 
 // 葉の画像を 1 枚ずつに切り分け、付け根(=枝にいちばん近い部分)を支点にしたスプライトにする
-function buildSway(img, dist){
+// tree = { dist: 距離マップ, x, y, w } 基準にする枝の画像の位置(設計座標 --x --y --w)。葉と枝は同じ解像度(同じ倍率)の画像であること
+function buildSway(img, tree){
+  const dist = tree.dist;
   const px = readPixels(img), { w: W, h: H } = px, data = px.id.data;
-  const s = STAGE_W / W;                          // 画像px -> 設計座標
+  const imgW = parseFloat(img.style.getPropertyValue('--w')) || STAGE_W;
+  const s = imgW / W;                             // 画像px -> 設計座標(最初の木と葉は --w:1088 なので 1088/W)
+  const xOff = parseFloat(img.style.getPropertyValue('--x')) || 0;
   const yOff = parseFloat(img.style.getPropertyValue('--y'));
-  const tx = dist.w / W, ty = dist.h / H;         // 画像px -> 木のpx
-  const dAt = (x, y) => dist.d[Math.min(dist.h - 1, (y * ty) | 0) * dist.w + Math.min(dist.w - 1, (x * tx) | 0)] / 3;
+  // 葉の画像px -> 枝の画像px(位置のずれを足す。最初の木と葉は同じ位置なのでずれ 0)
+  const sx = s / tree.s;                       // 葉と枝の倍率の比(同じなら 1)
+  const offX = (xOff - tree.x) / tree.s, offY = (yOff - tree.y) / tree.s;
+  const dAt = (x, y) => {
+    const bx = Math.round(x * sx + offX), by = Math.round(y * sx + offY);
+    if (bx < 0 || by < 0 || bx >= dist.w || by >= dist.h) return 1e4;   // 枝の画像の外は、遠いものとして扱う
+    return dist.d[by * dist.w + bx] / 3;
+  };
 
   // 1) 連結成分ラベリング(不透明度の高い部分を核にする)
   const label = new Int32Array(W * H), stack = new Int32Array(W * H);
@@ -216,6 +240,8 @@ function buildSway(img, dist){
       if (v) label[i] = v;
     }
   }
+  // 画像ごとに揺らす条件を変えられる(data-max-area / data-max-gap。省略すると上の MAX_AREA / MAX_GAP)
+  const maxArea = +img.dataset.maxArea || MAX_AREA, maxGap = +img.dataset.maxGap || MAX_GAP;
   // 3) 各塊の面積・範囲・枝までの最短距離
   const area = new Int32Array(n + 1), dmin = new Float32Array(n + 1).fill(1e9);
   const x0 = new Int32Array(n + 1).fill(W), y0 = new Int32Array(n + 1).fill(H), x1 = new Int32Array(n + 1), y1 = new Int32Array(n + 1);
@@ -232,15 +258,15 @@ function buildSway(img, dist){
   let cnt = 0, tooBig = 0, tooFar = 0;
   for (let l = 1; l <= n; l++) {
     const a = area[l] * s * s;
-    if (a > MAX_AREA) tooBig++; else if (dmin[l] > MAX_GAP) tooFar++;
-    if (a >= MIN_AREA && a <= MAX_AREA && dmin[l] <= MAX_GAP) { move[l] = 1; cnt++; }
+    if (a > maxArea) tooBig++; else if (dmin[l] > maxGap) tooFar++;
+    if (a >= MIN_AREA && a <= maxArea && dmin[l] <= maxGap) { move[l] = 1; cnt++; }
   }
   // 手で指定された支点を、該当する葉に紐づける(指定があれば対象外の葉も動かす)
   const layerName = img.src.split('/').pop();
   const ovPivot = new Array(n + 1).fill(null), still = new Uint8Array(n + 1);
   for (const o of overrides) {
     if (o.layer !== layerName) continue;
-    const lx = Math.round(o.leaf[0] / s), ly = Math.round((o.leaf[1] - yOff) / s);
+    const lx = Math.round((o.leaf[0] - xOff) / s), ly = Math.round((o.leaf[1] - yOff) / s);
     if (lx < 0 || ly < 0 || lx >= W || ly >= H) continue;
     const l = label[ly * W + lx];
     if (!l) continue;
@@ -251,7 +277,7 @@ function buildSway(img, dist){
       if (!EDIT && move[l]) { move[l] = 0; cnt--; }
       continue;
     }
-    ovPivot[l] = [o.pivot[0] / s, (o.pivot[1] - yOff) / s];
+    ovPivot[l] = [(o.pivot[0] - xOff) / s, (o.pivot[1] - yOff) / s];
     if (!move[l]) { move[l] = 1; cnt++; }
   }
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -289,7 +315,7 @@ function buildSway(img, dist){
     const ppx = ovPivot[l] ? ovPivot[l][0] : pn[l] ? psx[l] / pn[l] : (x0[l] + x1[l]) / 2;
     const ppy = ovPivot[l] ? ovPivot[l][1] : pn[l] ? psy[l] / pn[l] : y1[l];
     Object.assign(c.style, {
-      left:   (x0[l] * s / STAGE_W * 100) + '%',
+      left:   ((xOff + x0[l] * s) / STAGE_W * 100) + '%',
       top:    ((yOff + y0[l] * s) / STAGE_H * 100) + '%',
       width:  (S.bw * s / STAGE_W * 100) + '%',
       height: (S.bh * s / STAGE_H * 100) + '%',
@@ -299,7 +325,7 @@ function buildSway(img, dist){
     // 葉ごとの乱数(同じ葉は毎回同じ値)
     const r = m => { const v = Math.sin((leaves.length + 1) * 12.9898 * m) * 43758.5453; return v - Math.floor(v); };
     const rec = { el: c, h1: r(1), h2: r(2.7), h3: r(5.1), h4: r(9.3), on: false,
-                  layer: layerName, s, yOff, bx: x0[l], by: y0[l], bw: S.bw, bh: S.bh, manual: !!ovPivot[l], still: !!still[l], dot: null,
+                  layer: layerName, s, xOff, yOff, bx: x0[l], by: y0[l], bw: S.bw, bh: S.bh, manual: !!ovPivot[l], still: !!still[l], dot: null,
                   autoX: pn[l] ? psx[l] / pn[l] : (x0[l] + x1[l]) / 2, autoY: pn[l] ? psy[l] / pn[l] : y1[l] };   // 自動で求めた支点
     leaves.push(rec);
     if (DEBUG || EDIT) {
@@ -316,7 +342,7 @@ function placeDot(L, px, py){
   L.px = px; L.py = py;
   L.el.style.transformOrigin = ((px - L.bx) / L.bw * 100) + '% ' + ((py - L.by) / L.bh * 100) + '%';
   if (L.dot) {
-    L.dot.style.left = (px * L.s / STAGE_W * 100) + '%';
+    L.dot.style.left = ((L.xOff + px * L.s) / STAGE_W * 100) + '%';
     L.dot.style.top  = ((L.yOff + py * L.s) / STAGE_H * 100) + '%';
     L.dot.classList.toggle('manual', L.manual && !L.still);
     L.dot.classList.toggle('still', !!L.still);
@@ -350,7 +376,7 @@ function setupEditor(){
 
   function leafAt(dx, dy){
     for (let i = leaves.length - 1; i >= 0; i--) {               // 手前の葉を優先
-      const L = leaves[i], lx = Math.floor(dx / L.s) - L.bx, ly = Math.floor((dy - L.yOff) / L.s) - L.by;
+      const L = leaves[i], lx = Math.floor((dx - L.xOff) / L.s) - L.bx, ly = Math.floor((dy - L.yOff) / L.s) - L.by;
       for (let r = 0; r <= 3; r++) for (let oy = -r; oy <= r; oy++) for (let ox = -r; ox <= r; ox++) {
         const x = lx + ox, y = ly + oy;
         if (x < 0 || y < 0 || x >= L.bw || y >= L.bh) continue;
@@ -361,14 +387,14 @@ function setupEditor(){
   }
   const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(overrides)); } catch (e) {} };
   const same = (o, L) => o.layer === L.layer && L.el.getContext('2d') &&
-      (() => { const lx = Math.round(o.leaf[0] / L.s) - L.bx, ly = Math.round((o.leaf[1] - L.yOff) / L.s) - L.by;
+      (() => { const lx = Math.round((o.leaf[0] - L.xOff) / L.s) - L.bx, ly = Math.round((o.leaf[1] - L.yOff) / L.s) - L.by;
                return lx >= 0 && ly >= 0 && lx < L.bw && ly < L.bh && L.el.getContext('2d').getImageData(lx, ly, 1, 1).data[3] > 0; })();
   function text(){
     msg.textContent = cur ? '② 支点にしたい位置をクリック(Escで取消)' : '① 直したい葉をクリック';
     cnt.textContent = `手指定: ${overrides.length} 枚`;
     if (cur) {
       const L = cur.L; sel.style.display = '';
-      sel.style.left = (L.bx * L.s / STAGE_W * 100) + '%';
+      sel.style.left = ((L.xOff + L.bx * L.s) / STAGE_W * 100) + '%';
       sel.style.top = ((L.yOff + L.by * L.s) / STAGE_H * 100) + '%';
       sel.style.width = (L.bw * L.s / STAGE_W * 100) + '%';
       sel.style.height = (L.bh * L.s / STAGE_H * 100) + '%';
@@ -399,7 +425,7 @@ function setupEditor(){
       const k = overrides.findIndex(q => same(q, L));
       if (k >= 0) overrides[k] = o; else overrides.push(o);
       L.manual = true; L.still = false;
-      placeDot(L, dx / L.s, (dy - L.yOff) / L.s);
+      placeDot(L, (dx - L.xOff) / L.s, (dy - L.yOff) / L.s);
       cur = null; save();
     }
     text();
@@ -475,8 +501,15 @@ updateEye();
   } catch (e) { overrides = []; }
   if (!Array.isArray(overrides)) overrides = [];
 
-  const dist = distanceMap(readPixels(document.querySelector('img[data-role="tree"]')));
-  for (const img of document.querySelectorAll('img[data-sway]')) buildSway(img, dist);
+  // 葉ごとの基準の枝(data-tree="tree2" のように指定。省略すると最初の木 data-role="tree")。枝ごとに距離マップを 1 回だけ作る
+  const trees = {};
+  const treeOf = name => trees[name] || (() => {
+    const el = document.querySelector('img[data-role="' + name + '"]');
+    const w = parseFloat(el.style.getPropertyValue('--w'));
+    const dm = distanceMap(readPixels(el));
+    return trees[name] = { dist: dm, x: parseFloat(el.style.getPropertyValue('--x')) || 0, y: parseFloat(el.style.getPropertyValue('--y')), s: w / dm.w };
+  })();
+  for (const img of document.querySelectorAll('img[data-sway]')) buildSway(img, treeOf(img.dataset.tree || 'tree'));
   if (EDIT) setupEditor();
   } catch (e) { console.error('init failed:', e); }
   requestAnimationFrame(frame);
