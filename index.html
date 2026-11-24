@@ -67,11 +67,11 @@
   #stage .bird-drink { animation: birdTilt 6s ease-in-out infinite; }
   @keyframes birdTilt { 0% { rotate: 0deg; } 12% { rotate: 4deg; } 24% { rotate: 0deg; } 36% { rotate: 2deg; } 48% { rotate: 0deg; } 60% { rotate: 2deg; } 72%, 100% { rotate: 0deg; }  /* 72%〜100% が、0度で止まっている間 */ }
   @media (prefers-reduced-motion: reduce) { #stage .bird-drink { animation: none; } }
-  /* 枝先の波紋(水を飲む鳥): a と b を 2s(1周の長さ)で交互に切り替える(a=0〜50%、b=50〜100%)。2s を小さくすると速くなる */
-  #stage .tip-a { animation: tipA 2s steps(1, end) infinite; }
-  #stage .tip-b { animation: tipB 2s steps(1, end) infinite; }
-  @keyframes tipA { 0% { opacity: 1; } 50% { opacity: 0; } }
-  @keyframes tipB { 0% { opacity: 0; } 50% { opacity: 1; } }
+  /* 枝先の波紋(水を飲む鳥): a と b を 2s(1周の長さ)で、フェードイン・フェードアウトして入れ替える(a が消える間に b が現れる)。2s を小さくすると速くなる */
+  #stage .tip-a { animation: tipA 2s ease-in-out infinite; }
+  #stage .tip-b { animation: tipB 2s ease-in-out infinite; }
+  @keyframes tipA { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes tipB { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { #stage .tip-a, #stage .tip-b { animation: none; } #stage .tip-b { opacity: 0; } }
   /* kirakira: 全体がいっせいに、小さくぶるぶる震える(点滅はしない)。0.6s = 震えの 1 周の長さ(小さいほど速い)。
      translate の % は画像の幅(設計座標 1088px)に対する割合で、0.054% ≒ 0.6px。数字を大きくすると震えが大きくなる */
