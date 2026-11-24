@@ -473,8 +473,12 @@ function frame(now){
   energy = Math.min(energy * DECAY + Math.abs(v) * SCROLL_GAIN, 1);
   if (energy > 0.002) {
     const t = (now - t0) / 1000;
+    // 画面の外(上下 300 設計px の余裕つき)の葉は、揺らさない(スクロール中の負荷を減らす)
+    const sr = stage.getBoundingClientRect(), kk = STAGE_H / sr.height;
+    const viewTop = -sr.top * kk - 300, viewBot = (innerHeight - sr.top) * kk + 300;
     for (const L of leaves) {
-      const env = L.still ? 0 : energy * (L.h4 < L.boost ? 0.9 : 0);
+      const ly = L.yOff + L.by * L.s, onScreen = ly + L.bh * L.s > viewTop && ly < viewBot;
+      const env = (L.still || !onScreen) ? 0 : energy * (L.h4 < L.boost ? 0.9 : 0);
       if (env < 0.001) { if (L.on) { L.el.style.transform = ''; L.on = false; } continue; }
       const ang = (MIN_ANGLE + (MAX_ANGLE - MIN_ANGLE) * L.h3) * rad * env
                 * Math.sin(t * SWAY_SPEED * (1.6 + L.h1 * 1.6) + L.h2 * 6.2831);
@@ -525,6 +529,15 @@ updateEye();
 })();
 </script>
 <script>
+// ===== スクロール中の負荷の軽減 =====
+// スマホ(指で操作する端末)では、スクロール中だけ canvas の再描画を間引いて、CSS の動き(水しぶきなど)をなめらかに保つ。止まったら元に戻る。
+const TOUCH_DEVICE   = matchMedia('(pointer: coarse)').matches;
+const SCROLL_GAP_MS = 100;      // スクロール中の canvas の更新間隔(ms)。大きいほど軽いが、きらきらがカクつく(100 = 約10コマ/秒)
+const SCROLL_IDLE_MS = 150;     // スクロールが止まってから、元の更新間隔に戻るまでの時間(ms)
+let scrollingNow = false, scrollTimer = 0;
+addEventListener('scroll', () => { scrollingNow = true; clearTimeout(scrollTimer); scrollTimer = setTimeout(() => { scrollingNow = false; }, SCROLL_IDLE_MS); }, { passive: true });
+const frameGap = base => (TOUCH_DEVICE && scrollingNow) ? Math.max(base, SCROLL_GAP_MS) : base;   // base = ふだんの更新間隔(ms)
+
 // ===== 滝の水の流れ =====
 // 滝の 3 段それぞれに、縦の筋を下へ流す。座標は canvas 内(lake.webp の (560,3400) を原点とした画像px)
 const FALL_TIERS = [            // x0,x1,y0,y1 = 水が落ちる範囲 / speed = 落ちる速さ(px/秒) / n = 筋の本数
@@ -545,8 +558,11 @@ const FALL_ALPHA = 0.32;        // 筋の濃さ(0〜1)。大きいほどはっ�
   });
   let visible = false;
   new IntersectionObserver(e => { visible = e[0].isIntersecting; if (visible) requestAnimationFrame(draw); }).observe(cv);
+  let lastDraw = 0;
   function draw(ts){
     if (!visible) return;
+    requestAnimationFrame(draw);
+    if (ts - lastDraw < frameGap(33)) return; lastDraw = ts;   // 約30コマ/秒(スマホでスクロール中は間引く)
     g.clearRect(0, 0, cv.width, cv.height);
     const T = ts / 1000;
     for (const t of FALL_TIERS) {
@@ -563,7 +579,6 @@ const FALL_ALPHA = 0.32;        // 筋の濃さ(0〜1)。大きいほどはっ�
       }
       g.restore();
     }
-    requestAnimationFrame(draw);
   }
 })();
 </script>
@@ -640,7 +655,7 @@ const SHADOW_STRIP = 4;         // 帯の高さ(画像px)。小さいほど滑�
   function tick(ts){
     if (!visible || !ready) return;
     requestAnimationFrame(tick);
-    if (ts - last < 33) return; last = ts;          // 約30fps
+    if (ts - last < frameGap(33)) return; last = ts;          // 約30fps(スマホでスクロール中は間引く)
     const t = ts / 1000 * SHADOW_SPEED;
     g.clearRect(0, 0, W, H);
     for (let y = 0; y < H; y += SHADOW_STRIP) {
@@ -681,7 +696,7 @@ const KIRA_RECTS = {
     function tick(ts){
       if (!visible || !ready) return;
       if (!still) requestAnimationFrame(tick);
-      if (ts - last < 33) return; last = ts;       // 約30fps
+      if (ts - last < frameGap(33)) return; last = ts;       // 約30fps(スマホでスクロール中は間引く)
       const t = ts / 1000 * KIRA_SPEED * o.speed;
       g.clearRect(0, 0, cv.width, cv.height);
       for (let i = 0; i < rects.length; i++) {
