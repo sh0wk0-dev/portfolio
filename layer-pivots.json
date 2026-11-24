@@ -696,5 +696,27 @@
    972.4,
    2764
   ]
+ },
+ {
+  "layer": "leaves-drink.webp",
+  "leaf": [
+   578,
+   5848
+  ],
+  "pivot": [
+   569.3,
+   5851
+  ]
+ },
+ {
+  "layer": "leaves-drink.webp",
+  "leaf": [
+   560,
+   5864
+  ],
+  "pivot": [
+   559.8,
+   5862.4
+  ]
  }
 ]
