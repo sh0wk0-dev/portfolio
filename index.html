@@ -68,11 +68,14 @@
   @keyframes birdTilt { 0% { rotate: 0deg; } 12% { rotate: 4deg; } 24% { rotate: 0deg; } 36% { rotate: 2deg; } 48% { rotate: 0deg; } 60% { rotate: 2deg; } 72%, 100% { rotate: 0deg; }  /* 72%〜100% が、0度で止まっている間 */ }
   @media (prefers-reduced-motion: reduce) { #stage .bird-drink { animation: none; } }
   /* 枝先の波紋(水を飲む鳥): a と b を 2s(1周の長さ)で、フェードイン・フェードアウトして入れ替える(a が消える間に b が現れる)。2s を小さくすると速くなる */
-  #stage .tip-a { animation: tipA 2s ease-in-out infinite; }
+  #stage .tip-a { animation: tipA 2s ease-in-out infinite, tipShake 0.5s steps(1, end) infinite; }
   #stage .tip-b { animation: tipB 2s ease-in-out infinite; }
+  #stage img.tip-b[src*="ripple"] { animation: tipB 2s ease-in-out infinite, tipShake 0.5s steps(1, end) infinite; }  /* 波紋だけ震える(水面の筋 mizu-lower-b は震えない) */
+  /* 小刻みな震え。0.5s = 震えの 1 周(小さいほど速い)。translate の % は波紋の画像の幅に対する割合で、0.18% ≒ 0.7px(設計座標)。大きくすると震えが大きくなる */
+  @keyframes tipShake { 0% { translate: 0.12% -0.1%; } 16% { translate: -0.18% 0.08%; } 33% { translate: 0.1% 0.18%; } 50% { translate: -0.12% -0.16%; } 66% { translate: 0.18% 0.04%; } 83% { translate: -0.06% 0.15%; } }
   @keyframes tipA { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   @keyframes tipB { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { #stage .tip-a, #stage .tip-b { animation: none; } #stage .tip-b { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { #stage .tip-a, #stage .tip-b, #stage img.tip-b[src*="ripple"] { animation: none; } #stage .tip-b { opacity: 0; } }
   /* kirakira: 全体がいっせいに、小さくぶるぶる震える(点滅はしない)。0.6s = 震えの 1 周の長さ(小さいほど速い)。
      translate の % は画像の幅(設計座標 1088px)に対する割合で、0.054% ≒ 0.6px。数字を大きくすると震えが大きくなる */
   #stage .kira-all { animation: kiraShake 0.6s steps(1, end) infinite, kiraShrink 1s ease-in-out infinite alternate; }  /* 震え + ほんの少し縮んで戻る(1s = 縮む→戻る の半周) */
