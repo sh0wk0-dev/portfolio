@@ -62,9 +62,10 @@
     #stage .foam1, #stage .foam2, #stage .tsubo { animation: none; }
     #stage .foam2, #stage .tsubo2, #stage .tsubo3 { opacity: 0; } #stage .tsubo1 { opacity: 1; }
   }
-  /* 水を飲む鳥: 0度 ⇄ 3度(時計回り)をゆっくり行き来する。3s = 0度→3度の長さ(小さいほど速い)、3deg = 傾きの大きさ */
-  #stage .bird-drink { animation: birdTilt 3s ease-in-out infinite alternate; }
-  @keyframes birdTilt { from { rotate: 0deg; } to { rotate: 3deg; } }
+  /* 水を飲む鳥: 4度 → 2度 → 2度 の順に(時計回り)傾いて、また 4度に戻る。4.5s = 1周の長さ(小さいほど速い)。
+     角度は下の keyframes の度数、%は 1周の中での時刻 */
+  #stage .bird-drink { animation: birdTilt 4.5s ease-in-out infinite; }
+  @keyframes birdTilt { 0% { rotate: 4deg; } 33% { rotate: 2deg; } 66% { rotate: 2deg; } 100% { rotate: 4deg; } }
   @media (prefers-reduced-motion: reduce) { #stage .bird-drink { animation: none; } }
   /* 枝先の波紋(水を飲む鳥): a と b を 1.2s で交互に切り替える(a=0〜50%、b=50〜100%)。1.2s を小さくすると速くなる */
   #stage .tip-a { animation: tipA 1.2s steps(1, end) infinite; }
