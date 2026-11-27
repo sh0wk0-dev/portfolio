@@ -56,8 +56,13 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }  /* 画面には見せず、読み上げ用に残す */
 .profile p { margin: 0 0 1.4em; font-size: 15px; line-height: 2; letter-spacing: .04em; }
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
-.profile .lead { font-size: clamp(16px, 2.6vw, 19px); letter-spacing: .12em; margin-bottom: 1.8em; text-align: center; padding-left: .12em; }  /* 冒頭のキャッチコピー(中央揃え。padding-left は字間による右寄りを打ち消す) */
-.profile .photo { display: block; width: 100vw; max-width: none; height: auto; margin: 0 0 24px calc(50% - 50vw); }  /* 名前の上の画像(横長の絵。ブラウザの左右いっぱいに広げる。比率はそのまま) */
+.profile .hero { position: relative; width: 100vw; margin: 0 0 24px calc(50% - 50vw); }  /* 名前の上の画像の枠(ブラウザの左右いっぱい) */
+.profile .photo { display: block; width: 100%; max-width: none; height: auto; }  /* 横長の絵(比率はそのまま) */
+/* キャッチコピー: 画像の天地左右の中央に重ねる。text-shadow = 絵の上でも読めるよう、文字の周りをうっすら暗くする */
+.profile .lead { position: absolute; inset: 0; margin: 0; padding: 0 16px 0 calc(16px + .12em);
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: clamp(15px, 2.6vw, 22px); line-height: 1.6; letter-spacing: .12em;
+  text-shadow: 0 0 6px rgba(0, 0, 0, .9), 0 0 14px rgba(0, 0, 0, .7); }
 .profile-page { overflow-x: clip; }  /* 100vw にスクロールバーの幅が含まれる分、横にはみ出さないよう切る(sticky のメニューは効いたまま) */
 .profile .name { font-size: 17px; letter-spacing: .16em; margin-bottom: 1.8em; text-align: center; padding-left: .16em; }  /* 名前(中央揃え。padding-left は字間による右寄りを打ち消す。margin-bottom = 下の本文との間) */
 .profile .contact { margin-top: 2em; }
