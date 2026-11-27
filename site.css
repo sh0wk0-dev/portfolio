@@ -58,11 +58,12 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
 .profile .hero { position: relative; width: 100vw; margin: 0 0 24px calc(50% - 50vw); }  /* 名前の上の画像の枠(ブラウザの左右いっぱい) */
 .profile .photo { display: block; width: 100%; max-width: none; height: auto; }  /* 横長の絵(比率はそのまま) */
-/* キャッチコピー: 画像の天地左右の中央に重ねる。text-shadow = 絵の上でも読めるよう、文字の周りをうっすら暗くする */
-.profile .lead { position: absolute; inset: 0; margin: 0; padding: 0 16px 0 calc(16px + .12em);
+/* キャッチコピー: 画像の天地左右の中央に、黒い細長い四角に入れて重ねる */
+.profile .lead { position: absolute; inset: 0; margin: 0; padding: 0 12px;
   display: flex; align-items: center; justify-content: center; text-align: center;
-  font-size: clamp(15px, 2.6vw, 22px); line-height: 1.6; letter-spacing: .12em;
-  text-shadow: 0 0 6px rgba(0, 0, 0, .9), 0 0 14px rgba(0, 0, 0, .7); }
+  font-size: clamp(14px, 2.6vw, 22px); line-height: 1.6; letter-spacing: .12em; }
+.profile .lead span { background: #000; padding: .35em 1.4em .35em calc(1.4em + .12em); }  /* 黒い四角。.35em = 上下の余白、1.4em = 左右の余白(+.12em は字間による右寄りを打ち消す) */
+@media (max-width: 480px) { .profile .lead span { padding: .3em .8em .3em calc(.8em + .12em); } }  /* スマホでは左右の余白を詰める */
 .profile-page { overflow-x: clip; }  /* 100vw にスクロールバーの幅が含まれる分、横にはみ出さないよう切る(sticky のメニューは効いたまま) */
 .profile .name { font-size: 17px; letter-spacing: .16em; margin-bottom: 1.8em; text-align: center; padding-left: .16em; }  /* 名前(中央揃え。padding-left は字間による右寄りを打ち消す。margin-bottom = 下の本文との間) */
 .profile .contact { margin-top: 2em; }
