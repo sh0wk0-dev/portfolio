@@ -50,8 +50,8 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .profile p { margin: 0 0 1.4em; font-size: 15px; line-height: 2; letter-spacing: .04em; }
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
 .profile .lead { font-size: clamp(16px, 2.6vw, 19px); letter-spacing: .12em; margin-bottom: 1.8em; }  /* 冒頭のキャッチコピー */
-.profile .photo { display: block; width: min(200px, 50vw); aspect-ratio: 1; object-fit: cover; background: #888; margin: 0 0 24px; }  /* 名前の上の画像(200px の正方形) */
-.profile .name { font-size: 17px; letter-spacing: .16em; margin-bottom: .8em; }  /* 名前 */
+.profile .photo { display: block; width: min(200px, 50vw); aspect-ratio: 1; object-fit: cover; background: #888; margin: 0 auto 24px; }  /* 名前の上の画像(200px の正方形、中央揃え) */
+.profile .name { font-size: 17px; letter-spacing: .16em; margin-bottom: .8em; text-align: center; padding-left: .16em; }  /* 名前(中央揃え。padding-left は字間による右寄りを打ち消す) */
 .profile .contact { margin-top: 2em; }
 .profile a { color: #fff; text-underline-offset: 4px; text-decoration-thickness: 1px; text-decoration-color: rgba(255, 255, 255, .35); }  /* 下線: 太さ 1px、白の透明度 35%(.35 を大きくすると濃くなる) */
 .profile a:hover, .profile a:focus-visible { opacity: .75; }
