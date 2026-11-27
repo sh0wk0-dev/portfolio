@@ -14,6 +14,13 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 }
 .menubar .title { font-size: clamp(12px, 1.8vw, 14px); letter-spacing: .08em; white-space: nowrap; color: #fff; text-decoration: none; }  /* タイトル(クリックでトップ index.html へ戻る) */
 .menubar .title:hover, .menubar .title:focus-visible { opacity: .75; }
+/* 幅の狭いスマホでは、タイトルとメニューの文字・間隔を詰めて、1 行に収める(大文字のタイトルが長いため) */
+@media (max-width: 420px) {
+  .menubar { gap: 10px; }
+  .menubar .title { font-size: 10.5px; letter-spacing: .03em; }
+  .menubar nav { gap: 12px; }
+  .menubar nav a { font-size: 12.5px; letter-spacing: .04em; }
+}
 .menubar nav { display: flex; gap: clamp(16px, 3vw, 32px); }
 .menubar nav a { color: #fff; text-decoration: none; font-size: clamp(13px, 2vw, 15px); letter-spacing: .08em; opacity: .85; transition: opacity .2s; }
 .menubar nav a:hover, .menubar nav a:focus-visible, .menubar nav a[aria-current="page"] { opacity: 1; text-decoration: underline; text-underline-offset: 6px; }
