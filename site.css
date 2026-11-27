@@ -58,12 +58,7 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
 .profile .hero { position: relative; width: 100vw; margin: 0 0 24px calc(50% - 50vw); }  /* 名前の上の画像の枠(ブラウザの左右いっぱい) */
 .profile .photo { display: block; width: 100%; max-width: none; height: auto; }  /* 横長の絵(比率はそのまま) */
-/* キャッチコピー: 画像の天地左右の中央に、黒い細長い四角に入れて重ねる */
-.profile .lead { position: absolute; inset: 0; margin: 0; padding: 0 12px;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  font-size: clamp(14px, 2.6vw, 22px); line-height: 1.6; letter-spacing: .12em; }
-.profile .lead span { display: inline-block; height: 35px; line-height: 35px; background: #000; padding: 0 1.4em 0 calc(1.4em + .12em); }  /* 黒い四角(PC)。35px = 四角の高さ、1.4em = 左右の余白(+.12em は字間による右寄りを打ち消す) */
-@media (max-width: 480px) { .profile .lead span { height: 25px; line-height: 25px; padding: 0 .8em 0 calc(.8em + .12em); } }  /* スマホ: 25px = 四角の高さ。左右の余白も詰める */
+.profile .lead { font-size: clamp(15px, 2.6vw, 19px); letter-spacing: .12em; text-align: center; padding-left: .12em; margin: 0 0 1.6em; }  /* キャッチコピー(画像の下、中央揃え。padding-left は字間による右寄りを打ち消す) */
 .profile-page { overflow-x: clip; }  /* 100vw にスクロールバーの幅が含まれる分、横にはみ出さないよう切る(sticky のメニューは効いたまま) */
 .profile .name { font-size: 17px; letter-spacing: .16em; margin-bottom: 1.8em; text-align: center; padding-left: .16em; }  /* 名前(中央揃え。padding-left は字間による右寄りを打ち消す。margin-bottom = 下の本文との間) */
 .profile .contact { margin-top: 2em; }
