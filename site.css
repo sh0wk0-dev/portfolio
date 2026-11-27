@@ -56,6 +56,7 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }  /* 画面には見せず、読み上げ用に残す */
 .profile p { margin: 0 0 1.4em; font-size: 15px; line-height: 2; letter-spacing: .04em; }
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
+.page.profile { padding-top: 0; }  /* 画像をメニューバーのすぐ下(ページの最上部)に置く */
 .profile .hero { position: relative; width: 100vw; margin: 0 0 24px calc(50% - 50vw); }  /* 名前の上の画像の枠(ブラウザの左右いっぱい) */
 .profile .photo { display: block; width: 100%; max-width: none; height: auto; }  /* 横長の絵(比率はそのまま) */
 .profile .lead { font-size: clamp(15px, 2.6vw, 19px); letter-spacing: .12em; text-align: center; padding-left: .12em; margin: 0 0 1.6em; }  /* キャッチコピー(画像の下、中央揃え。padding-left は字間による右寄りを打ち消す) */
