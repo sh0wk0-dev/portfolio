@@ -51,6 +51,6 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
 .profile .lead { font-size: clamp(16px, 2.6vw, 19px); letter-spacing: .12em; margin-bottom: 1.8em; }  /* 冒頭のキャッチコピー */
 .profile .contact { margin-top: 2em; }
-.profile a { color: #fff; text-underline-offset: 4px; text-decoration-thickness: 0.5px; }  /* 0.5px = 下線の太さ(細め) */
+.profile a { color: #fff; text-underline-offset: 4px; text-decoration-thickness: 1px; text-decoration-color: rgba(255, 255, 255, .35); }  /* 下線: 太さ 1px、白の透明度 35%(.35 を大きくすると濃くなる) */
 .profile a:hover, .profile a:focus-visible { opacity: .75; }
 .profile section + section { margin-top: 64px; }  /* 日本語と英語の間の余白 */
