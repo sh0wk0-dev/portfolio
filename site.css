@@ -12,7 +12,8 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
   padding: 0 max(var(--menu-pad), calc((100% - var(--menu-max)) / 2));
   background: #000; color: #fff;
 }
-.menubar .title { font-size: clamp(12px, 1.8vw, 14px); letter-spacing: .08em; white-space: nowrap; }  /* タイトル(リンクではない) */
+.menubar .title { font-size: clamp(12px, 1.8vw, 14px); letter-spacing: .08em; white-space: nowrap; color: #fff; text-decoration: none; }  /* タイトル(クリックでトップ index.html へ戻る) */
+.menubar .title:hover, .menubar .title:focus-visible { opacity: .75; }
 .menubar nav { display: flex; gap: clamp(16px, 3vw, 32px); }
 .menubar nav a { color: #fff; text-decoration: none; font-size: clamp(13px, 2vw, 15px); letter-spacing: .08em; opacity: .85; transition: opacity .2s; }
 .menubar nav a:hover, .menubar nav a:focus-visible, .menubar nav a[aria-current="page"] { opacity: 1; text-decoration: underline; text-underline-offset: 6px; }
