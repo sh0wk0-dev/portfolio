@@ -42,11 +42,11 @@ body { font-family: "Lora", "Hiragino Mincho ProN", "Yu Mincho", serif; }  /* Lo
 .form .note { margin: 20px 0 0; font-size: 14px; line-height: 1.7; min-height: 1.7em; }
 .hp { position: absolute; left: -9999px; }   /* スパム対策の隠し欄(人は入力しない) */
 
-/* About ページ */
-.about p { margin: 0 0 1.4em; font-size: 15px; line-height: 2; letter-spacing: .04em; }
-.about section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
-.about .lead { font-size: clamp(16px, 2.6vw, 19px); letter-spacing: .12em; margin-bottom: 1.8em; }  /* 冒頭のキャッチコピー */
-.about .contact { margin-top: 2em; }
-.about a { color: #fff; text-underline-offset: 4px; }
-.about a:hover, .about a:focus-visible { opacity: .75; }
-.about hr { border: 0; border-top: 1px solid rgba(255, 255, 255, .35); margin: 56px 0; width: 48px; }  /* 日本語と英語の区切りの短い線 */
+/* Profile ページ */
+.profile p { margin: 0 0 1.4em; font-size: 15px; line-height: 2; letter-spacing: .04em; }
+.profile section[lang="en"] p { line-height: 1.8; letter-spacing: .02em; }
+.profile .lead { font-size: clamp(16px, 2.6vw, 19px); letter-spacing: .12em; margin-bottom: 1.8em; }  /* 冒頭のキャッチコピー */
+.profile .contact { margin-top: 2em; }
+.profile a { color: #fff; text-underline-offset: 4px; }
+.profile a:hover, .profile a:focus-visible { opacity: .75; }
+.profile hr { border: 0; border-top: 1px solid rgba(255, 255, 255, .35); margin: 56px 0; width: 48px; }  /* 日本語と英語の区切りの短い線 */
